@@ -1,0 +1,8 @@
+{
+  "firestore": [
+    {
+      "database": "ai-studio-vuefashionstudio-56f91c08-f344-42f3-87a4-556a733d1ca7",
+      "rules": "firestore.rules"
+    }
+  ]
+}

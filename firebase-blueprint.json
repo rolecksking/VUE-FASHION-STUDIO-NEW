@@ -1,0 +1,63 @@
+{
+  "entities": {
+    "CMSConfig": {
+      "title": "CMSConfig",
+      "description": "Configuration settings for Vue Fashion Studio",
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "object",
+          "description": "Dynamic layout configuration content"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO timestamp of the update"
+        }
+      },
+      "required": ["data"]
+    },
+    "Inquiry": {
+      "title": "Inquiry",
+      "description": "Customer inquiry submission details",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "brand": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "string"
+        },
+        "link": {
+          "type": "string"
+        },
+        "submittedAt": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string"
+        }
+      },
+      "required": ["id", "name", "brand", "category", "scope"]
+    }
+  },
+  "firestore": {
+    "/cms_config/{document}": {
+      "schema": "CMSConfig",
+      "description": "Dynamic homepage CMS blocks and items"
+    },
+    "/inquiries/{document}": {
+      "schema": "Inquiry",
+      "description": "Logged customer campaign builder inquiries"
+    }
+  }
+}
