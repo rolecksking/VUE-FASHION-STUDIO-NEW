@@ -107,6 +107,38 @@ async function startServer() {
     res.send(`window.__STUDIO_CONFIG__ = ${JSON.stringify(config)};`);
   });
 
+  // API Route: JSON serving custom Firebase and password configuration
+  app.get("/api/studio-config", (req, res) => {
+    let config: any = {
+      firebase: null,
+      portalPassword: null
+    };
+
+    try {
+      const studioConfigPath = path.join(process.cwd(), "studio-config.json");
+      if (fs.existsSync(studioConfigPath)) {
+        config = JSON.parse(fs.readFileSync(studioConfigPath, "utf-8"));
+      }
+    } catch (e) {
+      console.error("Error reading studio-config.json for JSON route:", e);
+    }
+
+    // Server-side environment variable overrides
+    if (process.env.PORTAL_PASSWORD) {
+      config.portalPassword = process.env.PORTAL_PASSWORD;
+    }
+    if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_API_KEY) {
+      if (!config.firebase) config.firebase = {};
+      config.firebase.projectId = process.env.FIREBASE_PROJECT_ID;
+      config.firebase.apiKey = process.env.FIREBASE_API_KEY;
+      if (process.env.FIREBASE_DATABASE_ID) {
+        config.firebase.databaseId = process.env.FIREBASE_DATABASE_ID;
+      }
+    }
+
+    res.json(config);
+  });
+
   // API Route: Save custom studio configuration (database config and password)
   app.post("/api/save-studio-config", (req, res) => {
     const { firebase, portalPassword } = req.body;

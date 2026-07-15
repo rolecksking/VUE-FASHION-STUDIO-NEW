@@ -5,7 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>VUE FASHION STUDIO</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <script src="/api/studio-config.js"></script>
+    <script>
+      (function() {
+        window.__STUDIO_CONFIG__ = { firebase: null, portalPassword: null };
+        try {
+          var xhr = new XMLHttpRequest();
+          // Fetch the configuration synchronously so it is available before React bundle imports firestore.ts
+          xhr.open('GET', '/api/studio-config', false);
+          xhr.send();
+          if (xhr.status === 200) {
+            var contentType = xhr.getResponseHeader('content-type') || '';
+            if (contentType.indexOf('application/json') !== -1) {
+              window.__STUDIO_CONFIG__ = JSON.parse(xhr.responseText);
+            } else {
+              console.warn("Studio config endpoint returned non-JSON content. Falling back.");
+            }
+          } else {
+            console.warn("Studio config endpoint returned status " + xhr.status + ". Falling back.");
+          }
+        } catch (e) {
+          console.warn("Failed to fetch studio-config synchronously:", e);
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
