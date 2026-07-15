@@ -177,7 +177,7 @@ export default function Services({ tiers, onRequestTier }: ServicesProps) {
   const activeProduct = productRequests[activeProductIndex] || productRequests[0] || createDefaultProduct("Product 1");
 
   // Collapsible Steps State - Neat & Tidy
-  const [isProductBuilderOpen, setIsProductBuilderOpen] = useState<boolean>(true);
+  const [isProductBuilderOpen, setIsProductBuilderOpen] = useState<boolean>(false);
   const [isModelCurationOpen, setIsModelCurationOpen] = useState<boolean>(false);
   const [isProductionScopeOpen, setIsProductionScopeOpen] = useState<boolean>(false);
   const [isOutputRequirementsOpen, setIsOutputRequirementsOpen] = useState<boolean>(false);
