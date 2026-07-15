@@ -16,6 +16,12 @@ export const defaultSandboxConfig = {
 
 // Retrieve any custom configuration from localStorage or environment variables
 export function getFirebaseConfig() {
+  // Check if server-injected studio config is available
+  const serverConfig = (window as any).__STUDIO_CONFIG__;
+  if (serverConfig && serverConfig.firebase && serverConfig.firebase.projectId) {
+    return serverConfig.firebase;
+  }
+
   const localRaw = localStorage.getItem("vfs_custom_firebase_config");
   if (localRaw) {
     try {

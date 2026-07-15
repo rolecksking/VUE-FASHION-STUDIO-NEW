@@ -122,7 +122,13 @@ export default function PortalInquiries({
   const [activeTab, setActiveTab] = useState<TabType>("inquiries");
 
   // Portal Security States
-  const [savedPassword, setSavedPassword] = useState<string | null>(() => localStorage.getItem("vfs_portal_password"));
+  const [savedPassword, setSavedPassword] = useState<string | null>(() => {
+    const serverConfig = (window as any).__STUDIO_CONFIG__;
+    if (serverConfig && serverConfig.portalPassword) {
+      return serverConfig.portalPassword;
+    }
+    return localStorage.getItem("vfs_portal_password");
+  });
   const [failedAttempts, setFailedAttempts] = useState<number>(() => {
     const val = localStorage.getItem("vfs_failed_attempts");
     return val ? parseInt(val, 10) : 0;
@@ -2574,17 +2580,72 @@ export default function PortalInquiries({
                           };
 
                           localStorage.setItem("vfs_custom_firebase_config", JSON.stringify(cleanedConfig));
-                          triggerSaveToast("Database details updated! Connection saved.");
                           
-                          setTimeout(() => {
-                            window.location.reload();
-                          }, 1200);
+                          // Persist connection to server config
+                          fetch("/api/save-studio-config", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              firebase: cleanedConfig,
+                              portalPassword: savedPassword
+                            })
+                          })
+                          .then(() => {
+                            triggerSaveToast("Database connection saved to server persistently!");
+                            setTimeout(() => {
+                              window.location.reload();
+                            }, 1200);
+                          })
+                          .catch((err) => {
+                            console.error("Failed to save database config to server:", err);
+                            triggerSaveToast("Connection saved to browser local storage.");
+                            setTimeout(() => {
+                              window.location.reload();
+                            }, 1200);
+                          });
                         }}
                         className="w-full bg-white text-black font-sans-luxury text-[10px] tracking-widest uppercase font-semibold py-4.5 hover:bg-neutral-200 transition-colors flex items-center justify-center space-x-2 cursor-pointer"
                       >
                         <Save size={14} />
                         <span>Establish Live Connection & Reload</span>
                       </button>
+
+                      {/* Revert / Reset to Sandbox Database Option */}
+                      {((window as any).__STUDIO_CONFIG__?.firebase || localStorage.getItem("vfs_custom_firebase_config")) && (
+                        <div className="pt-2 text-center">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (window.confirm("Switch back to the pre-configured AI Studio Sandbox database? This will restore the default sandbox content.")) {
+                                localStorage.removeItem("vfs_custom_firebase_config");
+                                
+                                // Persist removal to Server
+                                fetch("/api/save-studio-config", {
+                                  method: "POST",
+                                  headers: { "Content-Type": "application/json" },
+                                  body: JSON.stringify({
+                                    firebase: null,
+                                    portalPassword: savedPassword
+                                  })
+                                })
+                                .then(() => {
+                                  triggerSaveToast("Reverted to Sandbox Database!");
+                                  setTimeout(() => {
+                                    window.location.reload();
+                                  }, 1200);
+                                })
+                                .catch((err) => {
+                                  console.error("Failed to clear database config on server:", err);
+                                  window.location.reload();
+                                });
+                              }
+                            }}
+                            className="text-neutral-500 hover:text-red-400 text-[9px] tracking-widest uppercase py-2 hover:underline cursor-pointer transition-colors"
+                          >
+                            Reset and Revert to Default Sandbox Database
+                          </button>
+                        </div>
+                      )}
 
                       {/* Instructions / Security Rules Setup */}
                       <div className="border border-neutral-900 p-5 bg-neutral-950/40 space-y-4">
@@ -3413,6 +3474,17 @@ service firebase.storage {
                             localStorage.setItem("vfs_portal_password", newPasswordInput);
                             setSavedPassword(newPasswordInput);
                             
+                            // Persist to Server
+                            const currentConfig = getFirebaseConfig();
+                            fetch("/api/save-studio-config", {
+                              method: "POST",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({
+                                firebase: currentConfig === defaultSandboxConfig ? null : currentConfig,
+                                portalPassword: newPasswordInput
+                              })
+                            }).catch(err => console.error("Failed to save password to server:", err));
+
                             // Reset inputs
                             setCurrentPasswordInput("");
                             setNewPasswordInput("");
@@ -3490,6 +3562,18 @@ service firebase.storage {
                                   if (confirmPass === savedPassword) {
                                     localStorage.removeItem("vfs_portal_password");
                                     setSavedPassword(null);
+
+                                    // Persist removal to Server
+                                    const currentConfig = getFirebaseConfig();
+                                    fetch("/api/save-studio-config", {
+                                      method: "POST",
+                                      headers: { "Content-Type": "application/json" },
+                                      body: JSON.stringify({
+                                        firebase: currentConfig === defaultSandboxConfig ? null : currentConfig,
+                                        portalPassword: null
+                                      })
+                                    }).catch(err => console.error("Failed to clear password on server:", err));
+
                                     triggerSaveToast("Reverted to default passcodes.");
                                     setPasswordFormSuccess("REVERTED TO DEFAULT PASSCODES.");
                                     setPasswordFormError("");

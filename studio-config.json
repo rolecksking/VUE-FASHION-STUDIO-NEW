@@ -1,0 +1,13 @@
+{
+  "firebase": {
+    "apiKey": "AIzaSyDyhNRRJVKCSL5JBoEMa2FAWJizpQzfkWs",
+    "authDomain": "vue-fashion-studio.firebaseapp.com",
+    "projectId": "vue-fashion-studio",
+    "storageBucket": "vue-fashion-studio.firebasestorage.app",
+    "messagingSenderId": "1056815593475",
+    "appId": "1:1056815593475:web:3af61532c9145dad713636",
+    "measurementId": "G-XWF9PMB38T",
+    "databaseId": "(default)"
+  },
+  "portalPassword": "vue"
+}

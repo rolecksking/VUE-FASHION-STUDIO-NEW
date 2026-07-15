@@ -47,6 +47,119 @@ async function startServer() {
     console.error("Error reading firebase-applet-config.json on server:", e);
   }
 
+  // Override with custom user config from studio-config.json if available
+  try {
+    const studioConfigPath = path.join(process.cwd(), "studio-config.json");
+    if (fs.existsSync(studioConfigPath)) {
+      const raw = fs.readFileSync(studioConfigPath, "utf-8");
+      const parsed = JSON.parse(raw);
+      if (parsed.firebase) {
+        if (parsed.firebase.projectId) firebaseConfig.projectId = parsed.firebase.projectId;
+        if (parsed.firebase.databaseId) firebaseConfig.firestoreDatabaseId = parsed.firebase.databaseId;
+        if (parsed.firebase.apiKey) firebaseConfig.apiKey = parsed.firebase.apiKey;
+      }
+    }
+  } catch (e) {
+    console.error("Error reading studio-config.json for backend override:", e);
+  }
+
+  // Environment variable overrides for production deployment hosting environments
+  if (process.env.FIREBASE_PROJECT_ID) {
+    firebaseConfig.projectId = process.env.FIREBASE_PROJECT_ID;
+  }
+  if (process.env.FIREBASE_DATABASE_ID) {
+    firebaseConfig.firestoreDatabaseId = process.env.FIREBASE_DATABASE_ID;
+  }
+  if (process.env.FIREBASE_API_KEY) {
+    firebaseConfig.apiKey = process.env.FIREBASE_API_KEY;
+  }
+
+  // API Route: Dynamic Script serving custom Firebase and password configuration
+  app.get("/api/studio-config.js", (req, res) => {
+    res.setHeader("Content-Type", "application/javascript");
+    let config: any = {
+      firebase: null,
+      portalPassword: null
+    };
+
+    try {
+      const studioConfigPath = path.join(process.cwd(), "studio-config.json");
+      if (fs.existsSync(studioConfigPath)) {
+        config = JSON.parse(fs.readFileSync(studioConfigPath, "utf-8"));
+      }
+    } catch (e) {
+      console.error("Error reading studio-config.json for script route:", e);
+    }
+
+    // Server-side environment variable overrides
+    if (process.env.PORTAL_PASSWORD) {
+      config.portalPassword = process.env.PORTAL_PASSWORD;
+    }
+    if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_API_KEY) {
+      if (!config.firebase) config.firebase = {};
+      config.firebase.projectId = process.env.FIREBASE_PROJECT_ID;
+      config.firebase.apiKey = process.env.FIREBASE_API_KEY;
+      if (process.env.FIREBASE_DATABASE_ID) {
+        config.firebase.databaseId = process.env.FIREBASE_DATABASE_ID;
+      }
+    }
+
+    res.send(`window.__STUDIO_CONFIG__ = ${JSON.stringify(config)};`);
+  });
+
+  // API Route: Save custom studio configuration (database config and password)
+  app.post("/api/save-studio-config", (req, res) => {
+    const { firebase, portalPassword } = req.body;
+    try {
+      const studioConfigPath = path.join(process.cwd(), "studio-config.json");
+      let currentConfig: any = {};
+      
+      if (fs.existsSync(studioConfigPath)) {
+        try {
+          currentConfig = JSON.parse(fs.readFileSync(studioConfigPath, "utf-8"));
+        } catch (e) {
+          console.error("Error reading existing studio-config.json in save route:", e);
+        }
+      }
+
+      if (firebase !== undefined) {
+        currentConfig.firebase = firebase;
+        
+        // Dynamically update server-side firebaseConfig for active email requests
+        if (firebase) {
+          if (firebase.projectId) firebaseConfig.projectId = firebase.projectId;
+          if (firebase.databaseId) firebaseConfig.firestoreDatabaseId = firebase.databaseId;
+          if (firebase.apiKey) firebaseConfig.apiKey = firebase.apiKey;
+        } else {
+          // Revert server-side firebaseConfig to original firebase-applet-config.json or defaults
+          firebaseConfig.projectId = "magnificent-technique-c3bk6";
+          firebaseConfig.firestoreDatabaseId = "ai-studio-vuefashionstudio-56f91c08-f344-42f3-87a4-556a733d1ca7";
+          firebaseConfig.apiKey = "AIzaSyC3GKkd2mUWQFS5JUYpfWvnvWF1V_DrJOI";
+          try {
+            const appletConfigPath = path.join(process.cwd(), "firebase-applet-config.json");
+            if (fs.existsSync(appletConfigPath)) {
+              const raw = fs.readFileSync(appletConfigPath, "utf-8");
+              const parsed = JSON.parse(raw);
+              if (parsed.projectId) firebaseConfig.projectId = parsed.projectId;
+              if (parsed.firestoreDatabaseId) firebaseConfig.firestoreDatabaseId = parsed.firestoreDatabaseId;
+              if (parsed.apiKey) firebaseConfig.apiKey = parsed.apiKey;
+            }
+          } catch (e) {}
+        }
+      }
+
+      if (portalPassword !== undefined) {
+        currentConfig.portalPassword = portalPassword;
+      }
+
+      fs.writeFileSync(studioConfigPath, JSON.stringify(currentConfig, null, 2), "utf-8");
+      res.json({ success: true });
+    } catch (err: any) {
+      console.error("Failed to save studio-config.json in save route:", err);
+      res.status(500).json({ error: "Failed to save configuration", details: err.message });
+    }
+  });
+
   // API Route: Send Photoshoot Inquiry Emails
   app.post("/api/send-email", async (req, res) => {
     const inquiry = req.body;
