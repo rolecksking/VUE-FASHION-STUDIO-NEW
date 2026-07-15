@@ -160,7 +160,14 @@ export default function Services({ tiers, onRequestTier, campaignRates }: Servic
     videoFee: 2500,
   };
 
-  const rates = { ...defaultRates, ...campaignRates };
+  const rates: CampaignBuilderRates = {
+    basePriceTier1: typeof campaignRates?.basePriceTier1 === "number" ? campaignRates.basePriceTier1 : defaultRates.basePriceTier1,
+    basePriceTier2: typeof campaignRates?.basePriceTier2 === "number" ? campaignRates.basePriceTier2 : defaultRates.basePriceTier2,
+    basePriceTier3: typeof campaignRates?.basePriceTier3 === "number" ? campaignRates.basePriceTier3 : defaultRates.basePriceTier3,
+    additionalModelFee: typeof campaignRates?.additionalModelFee === "number" ? campaignRates.additionalModelFee : defaultRates.additionalModelFee,
+    multiLocationFee: typeof campaignRates?.multiLocationFee === "number" ? campaignRates.multiLocationFee : defaultRates.multiLocationFee,
+    videoFee: typeof campaignRates?.videoFee === "number" ? campaignRates.videoFee : defaultRates.videoFee,
+  };
 
   // Campaign request submission states
   const [clientEmail, setClientEmail] = useState("");
