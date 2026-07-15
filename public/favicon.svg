@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Elegant dark charcoal-black background to contrast perfectly on light or dark browser tab bars -->
+  <rect width="64" height="64" rx="8" fill="#000000" />
+  
+  <!-- Sleek luxury thin frame -->
+  <rect x="10" y="10" width="44" height="44" fill="none" stroke="#ffffff" stroke-width="1.5" />
+  
+  <!-- Elegant 'VF' text centered with Bodoni / Didot serif typeface -->
+  <text x="32" y="37" 
+        font-family="'Bodoni Moda', 'Didot', 'Bodoni MT', 'Georgia', serif" 
+        font-size="22" 
+        font-weight="400" 
+        fill="#ffffff" 
+        text-anchor="middle" 
+        dominant-baseline="middle"
+        letter-spacing="0.5">VF</text>
+</svg>
