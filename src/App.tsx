@@ -9,7 +9,7 @@ import AssetSpecs from "./components/AssetSpecs";
 import InquiryForm from "./components/InquiryForm";
 import Footer from "./components/Footer";
 import PortalInquiries from "./components/PortalInquiries";
-import { CampaignItem, ServiceTier, AssetSpecItem, PartnerLogo, PartnerLogosConfig, PreProductionConfig } from "./types";
+import { CampaignItem, ServiceTier, AssetSpecItem, PartnerLogo, PartnerLogosConfig, PreProductionConfig, CampaignBuilderRates } from "./types";
 import PartnerLogos from "./components/PartnerLogos";
 
 const INITIAL_PREPRODUCTION: PreProductionConfig = {
@@ -177,8 +177,21 @@ const INITIAL_SERVICES: ServiceTier[] = [
   }
 ];
 
+const INITIAL_CAMPAIGN_RATES: CampaignBuilderRates = {
+  basePriceTier1: 2000,
+  basePriceTier2: 1750,
+  basePriceTier3: 1500,
+  additionalModelFee: 250,
+  multiLocationFee: 3500,
+  videoFee: 2500
+};
+
 export default function App() {
   const [portalOpen, setPortalOpen] = useState(false);
+  const [campaignRates, setCampaignRates] = useState<CampaignBuilderRates>(() => {
+    const raw = localStorage.getItem("vfs_cms_campaign_rates");
+    return raw ? JSON.parse(raw) : INITIAL_CAMPAIGN_RATES;
+  });
   const [inquiryCount, setInquiryCount] = useState(0);
   const [selectedScope, setSelectedScope] = useState<string>("");
   const [lang, setLang] = useState<string>("EN");
@@ -279,14 +292,16 @@ export default function App() {
           firestorePortfolio,
           firestoreServices,
           firestoreLogos,
-          firestorePreProd
+          firestorePreProd,
+          firestoreCampaignRates
         ] = await Promise.all([
           getCMSConfig("hero"),
           getCMSConfig("manifesto"),
           getCMSConfig("portfolio"),
           getCMSConfig("services"),
           getCMSConfig("partner_logos"),
-          getCMSConfig("preproduction")
+          getCMSConfig("preproduction"),
+          getCMSConfig("campaign_rates")
         ]);
 
         if (firestoreHero) {
@@ -313,6 +328,10 @@ export default function App() {
           setPreProductionConfig(firestorePreProd);
           localStorage.setItem("vfs_cms_preproduction", JSON.stringify(firestorePreProd));
         }
+        if (firestoreCampaignRates) {
+          setCampaignRates(firestoreCampaignRates);
+          localStorage.setItem("vfs_cms_campaign_rates", JSON.stringify(firestoreCampaignRates));
+        }
       } catch (err) {
         console.error("Failed to fetch initial cloud configurations:", err);
       } finally {
@@ -328,6 +347,12 @@ export default function App() {
     setPartnerLogosConfig(newConfig);
     localStorage.setItem("vfs_cms_partner_logos", JSON.stringify(newConfig));
     await saveCMSConfig("partner_logos", newConfig);
+  };
+
+  const handleUpdateCampaignRates = async (newRates: CampaignBuilderRates) => {
+    setCampaignRates(newRates);
+    localStorage.setItem("vfs_cms_campaign_rates", JSON.stringify(newRates));
+    await saveCMSConfig("campaign_rates", newRates);
   };
 
   const handleUpdatePreProduction = async (newConfig: PreProductionConfig) => {
@@ -429,7 +454,11 @@ export default function App() {
             <PartnerLogos config={partnerLogosConfig} />
 
             {/* Services & Tiered Production Tables (Campaign Builder) - Directly below Hero */}
-            <Services tiers={servicesTiers} onRequestTier={setSelectedScope} />
+            <Services 
+              tiers={servicesTiers} 
+              onRequestTier={setSelectedScope} 
+              campaignRates={campaignRates}
+            />
 
             {/* Client Asset Specs and Downloader (PRE-PRODUCTION PREPARATION) */}
             <AssetSpecs preProductionConfig={preProductionConfig} />
@@ -463,6 +492,8 @@ export default function App() {
             onUpdatePortfolioItems={handleUpdatePortfolio}
             servicesTiers={servicesTiers}
             onUpdateServicesTiers={handleUpdateServices}
+            campaignRates={campaignRates}
+            onUpdateCampaignRates={handleUpdateCampaignRates}
 
             // Partner Logos Props
             partnerLogosConfig={partnerLogosConfig}
