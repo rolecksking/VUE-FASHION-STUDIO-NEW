@@ -190,7 +190,15 @@ export default function App() {
   const [portalOpen, setPortalOpen] = useState(false);
   const [campaignRates, setCampaignRates] = useState<CampaignBuilderRates>(() => {
     const raw = localStorage.getItem("vfs_cms_campaign_rates");
-    return raw ? JSON.parse(raw) : INITIAL_CAMPAIGN_RATES;
+    if (raw) {
+      try {
+        const parsed = JSON.parse(raw);
+        return { ...INITIAL_CAMPAIGN_RATES, ...parsed };
+      } catch (e) {
+        return INITIAL_CAMPAIGN_RATES;
+      }
+    }
+    return INITIAL_CAMPAIGN_RATES;
   });
   const [inquiryCount, setInquiryCount] = useState(0);
   const [selectedScope, setSelectedScope] = useState<string>("");
@@ -329,8 +337,9 @@ export default function App() {
           localStorage.setItem("vfs_cms_preproduction", JSON.stringify(firestorePreProd));
         }
         if (firestoreCampaignRates) {
-          setCampaignRates(firestoreCampaignRates);
-          localStorage.setItem("vfs_cms_campaign_rates", JSON.stringify(firestoreCampaignRates));
+          const merged = { ...INITIAL_CAMPAIGN_RATES, ...firestoreCampaignRates };
+          setCampaignRates(merged);
+          localStorage.setItem("vfs_cms_campaign_rates", JSON.stringify(merged));
         }
       } catch (err) {
         console.error("Failed to fetch initial cloud configurations:", err);

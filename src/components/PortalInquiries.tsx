@@ -339,7 +339,14 @@ export default function PortalInquiries({
       setLocalHero([...heroImages]);
       setLocalTiers([...servicesTiers]);
       if (campaignRates) {
-        setLocalRates({ ...campaignRates });
+        setLocalRates({
+          basePriceTier1: campaignRates.basePriceTier1 ?? 2000,
+          basePriceTier2: campaignRates.basePriceTier2 ?? 1750,
+          basePriceTier3: campaignRates.basePriceTier3 ?? 1500,
+          additionalModelFee: campaignRates.additionalModelFee ?? 250,
+          multiLocationFee: campaignRates.multiLocationFee ?? 3500,
+          videoFee: campaignRates.videoFee ?? 2500,
+        });
       }
 
       if (preProductionConfig) {

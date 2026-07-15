@@ -160,7 +160,7 @@ export default function Services({ tiers, onRequestTier, campaignRates }: Servic
     videoFee: 2500,
   };
 
-  const rates = campaignRates || defaultRates;
+  const rates = { ...defaultRates, ...campaignRates };
 
   // Campaign request submission states
   const [clientEmail, setClientEmail] = useState("");
