@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ServiceTier, CampaignBuilderRates } from "../types";
+import { ServiceTier } from "../types";
 import DragDropUpload from "./DragDropUpload";
 import { Clock, Check, Sparkles, Film, Image as ImageIcon, MapPin, Users, Upload, Trash2, Plus, ChevronDown, ChevronUp, AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
 import { saveInquiry, uploadCampaignAsset } from "../firebase";
@@ -145,29 +145,10 @@ const createDefaultProduct = (name: string, description: string = "", images: st
 interface ServicesProps {
   tiers?: ServiceTier[];
   onRequestTier?: (scopeName: string) => void;
-  campaignRates?: CampaignBuilderRates;
 }
 
-export default function Services({ tiers, onRequestTier, campaignRates }: ServicesProps) {
+export default function Services({ tiers, onRequestTier }: ServicesProps) {
   const activeTiers = tiers && tiers.length > 0 ? tiers : DEFAULT_SERVICE_TIERS;
-
-  const defaultRates: CampaignBuilderRates = {
-    basePriceTier1: 2000,
-    basePriceTier2: 1750,
-    basePriceTier3: 1500,
-    additionalModelFee: 250,
-    multiLocationFee: 3500,
-    videoFee: 2500,
-  };
-
-  const rates: CampaignBuilderRates = {
-    basePriceTier1: typeof campaignRates?.basePriceTier1 === "number" ? campaignRates.basePriceTier1 : defaultRates.basePriceTier1,
-    basePriceTier2: typeof campaignRates?.basePriceTier2 === "number" ? campaignRates.basePriceTier2 : defaultRates.basePriceTier2,
-    basePriceTier3: typeof campaignRates?.basePriceTier3 === "number" ? campaignRates.basePriceTier3 : defaultRates.basePriceTier3,
-    additionalModelFee: typeof campaignRates?.additionalModelFee === "number" ? campaignRates.additionalModelFee : defaultRates.additionalModelFee,
-    multiLocationFee: typeof campaignRates?.multiLocationFee === "number" ? campaignRates.multiLocationFee : defaultRates.multiLocationFee,
-    videoFee: typeof campaignRates?.videoFee === "number" ? campaignRates.videoFee : defaultRates.videoFee,
-  };
 
   // Campaign request submission states
   const [clientEmail, setClientEmail] = useState("");
@@ -494,21 +475,21 @@ export default function Services({ tiers, onRequestTier, campaignRates }: Servic
   // Calculate high-fashion production math with per-product custom settings
   const calculatedDetails = productRequests.map(prod => {
     // Determine base rate per product look based on total count
-    let basePriceNum = rates.basePriceTier1;
+    let basePriceNum = 2000;
     if (looksCount >= 4 && looksCount <= 8) {
-      basePriceNum = rates.basePriceTier2;
+      basePriceNum = 1750;
     } else if (looksCount >= 9) {
-      basePriceNum = rates.basePriceTier3;
+      basePriceNum = 1500;
     }
 
     const modelAddon = prod.isBespokeModel && prod.modelsList.length > 1
-      ? rates.additionalModelFee * (prod.modelsList.length - 1)
+      ? 250 * (prod.modelsList.length - 1)
       : 0;
 
-    const scopeAddon = prod.productionScope === "multi" ? rates.multiLocationFee : 0;
+    const scopeAddon = prod.productionScope === "multi" ? 3500 : 0;
     
     const effectiveVideoCount = prod.videoCount !== undefined ? prod.videoCount : (prod.videoRequired ? 1 : 0);
-    const videoAddon = effectiveVideoCount * rates.videoFee;
+    const videoAddon = effectiveVideoCount * 2500;
 
     const total = basePriceNum + modelAddon + scopeAddon + videoAddon;
 
@@ -990,7 +971,7 @@ export default function Services({ tiers, onRequestTier, campaignRates }: Servic
                       </span>
                     </div>
                     <span className={`text-[10px] ${activeProduct.isBespokeModel ? "text-neutral-700" : "text-neutral-500"} font-light block leading-relaxed`}>
-                      Fine-tune features, age, size, ethnicity, and styling elements tailored to your precise collection brief (Curation included; +${rates.additionalModelFee > 0 ? `$` + rates.additionalModelFee.toLocaleString() : "no extra charge"} per additional model variant).
+                      Fine-tune features, age, size, ethnicity, and styling elements tailored to your precise collection brief (Curation included; +$250 per additional model variant).
                     </span>
                   </button>
                 </div>
@@ -1008,7 +989,7 @@ export default function Services({ tiers, onRequestTier, campaignRates }: Servic
                             Bespoke Model Variants
                           </span>
                           <p className="text-[10px] text-neutral-400 font-light mt-1">
-                            How many unique model castings are required? (First curation included, +${rates.additionalModelFee > 0 ? `$` + rates.additionalModelFee.toLocaleString() : "no extra charge"} per additional variant)
+                            How many unique model castings are required? (First curation included, +$250 per additional variant)
                           </p>
                         </div>
                         <div className="flex items-center space-x-3 bg-neutral-900 p-1.5 border border-neutral-800 rounded-sm">
@@ -1065,7 +1046,7 @@ export default function Services({ tiers, onRequestTier, campaignRates }: Servic
                         : "Curating Studio Model (Included)"}
                     </span>
                     <span className="text-[9px] text-neutral-500 italic">
-                      {activeProduct.isBespokeModel && activeProduct.activeModelIndex > 0 ? `+$${rates.additionalModelFee.toLocaleString()} variant surcharge` : "No additional cost"}
+                      {activeProduct.isBespokeModel && activeProduct.activeModelIndex > 0 ? "+$250 variant surcharge" : "No additional cost"}
                     </span>
                   </div>
 
@@ -1328,7 +1309,7 @@ export default function Services({ tiers, onRequestTier, campaignRates }: Servic
                         Multi-Location Campaign
                       </span>
                       <span className={`text-[10px] ${activeProduct.productionScope === "multi" ? "text-neutral-700" : "text-neutral-500"} font-light block leading-relaxed`}>
-                        Highly dynamic. Showcases your collection across diverse curated settings, studio arrangements, or landscapes (+ $${rates.multiLocationFee.toLocaleString()}).
+                        Highly dynamic. Showcases your collection across diverse curated settings, studio arrangements, or landscapes (+ $3,500).
                       </span>
                     </div>
                   </button>
@@ -1581,7 +1562,7 @@ export default function Services({ tiers, onRequestTier, campaignRates }: Servic
                               Select Video Quantity
                             </label>
                             <span className="text-[9px] font-mono text-neutral-500 uppercase">
-                              +${rates.videoFee > 0 ? `$` + rates.videoFee.toLocaleString() : "free"} per cinematic short
+                              +$2,500 per cinematic short
                             </span>
                           </div>
                           

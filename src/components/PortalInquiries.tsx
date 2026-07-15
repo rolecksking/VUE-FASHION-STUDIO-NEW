@@ -5,7 +5,7 @@ import {
   Settings, Image, FileText, Briefcase, Plus, Save, RotateCcw, CheckCircle, 
   ChevronRight, Inbox, Upload, Database, HelpCircle, Film, Loader2, Play, Edit, Mail
 } from "lucide-react";
-import { Inquiry, CampaignItem, ServiceTier, AssetSpecItem, PartnerLogo, PartnerLogosConfig, PreProductionConfig, PreProductionStep, CampaignBuilderRates } from "../types";
+import { Inquiry, CampaignItem, ServiceTier, AssetSpecItem, PartnerLogo, PartnerLogosConfig, PreProductionConfig, PreProductionStep } from "../types";
 import DragDropUpload from "./DragDropUpload";
 import { getInquiries, saveInquiry, deleteInquiryFromFirebase, uploadToFirebaseStorage, uploadWithProgress, getFirebaseConfig, defaultSandboxConfig, auth, getCMSConfig, saveCMSConfig } from "../firebase";
 import { 
@@ -30,8 +30,6 @@ interface PortalInquiriesProps {
   onUpdatePortfolioItems: (items: CampaignItem[]) => void;
   servicesTiers: ServiceTier[];
   onUpdateServicesTiers: (tiers: ServiceTier[]) => void;
-  campaignRates: CampaignBuilderRates;
-  onUpdateCampaignRates: (rates: CampaignBuilderRates) => void;
 
   // Partner Logos Props
   partnerLogosConfig: PartnerLogosConfig;
@@ -111,8 +109,6 @@ export default function PortalInquiries({
   onUpdatePortfolioItems,
   servicesTiers,
   onUpdateServicesTiers,
-  campaignRates,
-  onUpdateCampaignRates,
   partnerLogosConfig,
   onUpdatePartnerLogos,
   preProductionConfig,
@@ -176,14 +172,6 @@ export default function PortalInquiries({
   const [localManifesto, setLocalManifesto] = useState({ tagline: "", title: "", body: "", signature: "" });
   const [localHero, setLocalHero] = useState<any[]>([]);
   const [localTiers, setLocalTiers] = useState<ServiceTier[]>([]);
-  const [localRates, setLocalRates] = useState<CampaignBuilderRates>({
-    basePriceTier1: 2000,
-    basePriceTier2: 1750,
-    basePriceTier3: 1500,
-    additionalModelFee: 250,
-    multiLocationFee: 3500,
-    videoFee: 2500,
-  });
   
   // Custom Firebase Database config state
   const [dbConfig, setDbConfig] = useState({
@@ -338,16 +326,6 @@ export default function PortalInquiries({
       setLocalManifesto({ ...manifesto });
       setLocalHero([...heroImages]);
       setLocalTiers([...servicesTiers]);
-      if (campaignRates) {
-        setLocalRates({
-          basePriceTier1: campaignRates.basePriceTier1 ?? 2000,
-          basePriceTier2: campaignRates.basePriceTier2 ?? 1750,
-          basePriceTier3: campaignRates.basePriceTier3 ?? 1500,
-          additionalModelFee: campaignRates.additionalModelFee ?? 250,
-          multiLocationFee: campaignRates.multiLocationFee ?? 3500,
-          videoFee: campaignRates.videoFee ?? 2500,
-        });
-      }
 
       if (preProductionConfig) {
         setPreProdTitle(preProductionConfig.title || "");
@@ -373,7 +351,7 @@ export default function PortalInquiries({
         databaseId: currentConfig.databaseId || ""
       });
     }
-  }, [isOpen, manifesto, heroImages, servicesTiers, preProductionConfig, campaignRates]);
+  }, [isOpen, manifesto, heroImages, servicesTiers, preProductionConfig]);
 
   const loadInquiries = async () => {
     try {
@@ -780,18 +758,16 @@ export default function PortalInquiries({
 
   const saveServicesAndSpecs = () => {
     onUpdateServicesTiers(localTiers);
-    onUpdateCampaignRates(localRates);
-    triggerSaveToast("Production menus and campaign rates updated successfully.");
+    triggerSaveToast("Production menus updated successfully.");
   };
 
   const resetAllCMSToDefaults = () => {
-    if (window.confirm("Reset all CMS configs (Images, Manifesto, Services, Campaign Rates) back to pristine studio defaults? This cannot be undone.")) {
+    if (window.confirm("Reset all CMS configs (Images, Manifesto, Services) back to pristine studio defaults? This cannot be undone.")) {
       localStorage.removeItem("vfs_cms_hero");
       localStorage.removeItem("vfs_cms_manifesto");
       localStorage.removeItem("vfs_cms_portfolio");
       localStorage.removeItem("vfs_cms_services");
       localStorage.removeItem("vfs_cms_specs");
-      localStorage.removeItem("vfs_cms_campaign_rates");
       
       // Force page reload to reinitialize pristine defaults
       window.location.reload();
@@ -2259,98 +2235,6 @@ export default function PortalInquiries({
                             </div>
                           </div>
                         ))}
-                      </div>
-
-                      {/* Campaign Builder Cost Settings */}
-                      <div className="space-y-6 pt-6 border-t border-neutral-900">
-                        <div>
-                          <h4 className="font-serif-luxury text-lg text-white font-light uppercase tracking-wider">
-                            Campaign Builder Rates & Fee Structure
-                          </h4>
-                          <p className="text-[10px] text-neutral-500 uppercase tracking-widest mt-1">
-                            Fine-tune the custom pricing calculator formula. Changes instantly apply to real-time client inquiries in the campaign builder.
-                          </p>
-                        </div>
-
-                        <div className="border border-neutral-900 p-5 bg-neutral-950/40 space-y-6">
-                          {/* Base Rates by Look Volume */}
-                          <div className="space-y-4">
-                            <span className="font-mono text-[9px] text-neutral-400 tracking-widest block uppercase font-bold border-b border-neutral-900 pb-1">
-                              Base Rate Per Look (Varying by Total Count)
-                            </span>
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                              <div className="flex flex-col space-y-1.5">
-                                <label className="text-[9px] tracking-widest uppercase text-neutral-400">Atelier I (1-3 Looks) - $/Look</label>
-                                <input
-                                  type="number"
-                                  value={localRates.basePriceTier1}
-                                  onChange={(e) => setLocalRates(prev => ({ ...prev, basePriceTier1: Number(e.target.value) }))}
-                                  className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2 focus:border-white focus:outline-none font-light"
-                                />
-                              </div>
-
-                              <div className="flex flex-col space-y-1.5">
-                                <label className="text-[9px] tracking-widest uppercase text-neutral-400">Atelier II (4-8 Looks) - $/Look</label>
-                                <input
-                                  type="number"
-                                  value={localRates.basePriceTier2}
-                                  onChange={(e) => setLocalRates(prev => ({ ...prev, basePriceTier2: Number(e.target.value) }))}
-                                  className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2 focus:border-white focus:outline-none font-light"
-                                />
-                              </div>
-
-                              <div className="flex flex-col space-y-1.5">
-                                <label className="text-[9px] tracking-widest uppercase text-neutral-400">Atelier III (9+ Looks) - $/Look</label>
-                                <input
-                                  type="number"
-                                  value={localRates.basePriceTier3}
-                                  onChange={(e) => setLocalRates(prev => ({ ...prev, basePriceTier3: Number(e.target.value) }))}
-                                  className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2 focus:border-white focus:outline-none font-light"
-                                />
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Extra Option Addons */}
-                          <div className="space-y-4 pt-4 border-t border-neutral-900/60">
-                            <span className="font-mono text-[9px] text-neutral-400 tracking-widest block uppercase font-bold border-b border-neutral-900 pb-1">
-                              Custom Feature & Media Addons
-                            </span>
-
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                              <div className="flex flex-col space-y-1.5">
-                                <label className="text-[9px] tracking-widest uppercase text-neutral-400">Additional Model Surcharge ($)</label>
-                                <input
-                                  type="number"
-                                  value={localRates.additionalModelFee}
-                                  onChange={(e) => setLocalRates(prev => ({ ...prev, additionalModelFee: Number(e.target.value) }))}
-                                  className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2 focus:border-white focus:outline-none font-light"
-                                />
-                              </div>
-
-                              <div className="flex flex-col space-y-1.5">
-                                <label className="text-[9px] tracking-widest uppercase text-neutral-400">Multi-Location Surcharge ($)</label>
-                                <input
-                                  type="number"
-                                  value={localRates.multiLocationFee}
-                                  onChange={(e) => setLocalRates(prev => ({ ...prev, multiLocationFee: Number(e.target.value) }))}
-                                  className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2 focus:border-white focus:outline-none font-light"
-                                />
-                              </div>
-
-                              <div className="flex flex-col space-y-1.5">
-                                <label className="text-[9px] tracking-widest uppercase text-neutral-400">Cinematic Video Surcharge ($/Clip)</label>
-                                <input
-                                  type="number"
-                                  value={localRates.videoFee}
-                                  onChange={(e) => setLocalRates(prev => ({ ...prev, videoFee: Number(e.target.value) }))}
-                                  className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2 focus:border-white focus:outline-none font-light"
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
                       </div>
 
                       {/* Save Button for services tiers */}

@@ -84,13 +84,3 @@ export interface PreProductionConfig {
   downloadBriefFilename?: string;
 }
 
-export interface CampaignBuilderRates {
-  basePriceTier1: number;
-  basePriceTier2: number;
-  basePriceTier3: number;
-  additionalModelFee: number;
-  multiLocationFee: number;
-  videoFee: number;
-}
-
-
