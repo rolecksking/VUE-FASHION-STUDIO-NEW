@@ -80,5 +80,7 @@ export interface PreProductionConfig {
   images: string[];
   calibrationQuote?: string;
   calibrationAuthor?: string;
+  downloadBriefUrl?: string;
+  downloadBriefFilename?: string;
 }
 

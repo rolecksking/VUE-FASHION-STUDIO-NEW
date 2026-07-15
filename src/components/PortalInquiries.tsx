@@ -283,6 +283,9 @@ export default function PortalInquiries({
   const [preProdAuthor, setPreProdAuthor] = useState("");
   const [preProdImages, setPreProdImages] = useState<string[]>(["", "", ""]);
   const [preProdSteps, setPreProdSteps] = useState<PreProductionStep[]>([]);
+  const [preProdDownloadBriefUrl, setPreProdDownloadBriefUrl] = useState("");
+  const [preProdDownloadBriefFilename, setPreProdDownloadBriefFilename] = useState("");
+  const [preProdBriefUploadProgress, setPreProdBriefUploadProgress] = useState<number | null>(null);
 
   // Step specific form editing states
   const [editingStepId, setEditingStepId] = useState<string | null>(null);
@@ -332,6 +335,8 @@ export default function PortalInquiries({
         setPreProdAuthor(preProductionConfig.calibrationAuthor || "");
         setPreProdImages(preProductionConfig.images || ["", "", ""]);
         setPreProdSteps(preProductionConfig.steps || []);
+        setPreProdDownloadBriefUrl(preProductionConfig.downloadBriefUrl || "");
+        setPreProdDownloadBriefFilename(preProductionConfig.downloadBriefFilename || "");
       }
 
       // Sync custom db config
@@ -705,9 +710,30 @@ export default function PortalInquiries({
       images: preProdImages,
       calibrationQuote: preProdQuote,
       calibrationAuthor: preProdAuthor,
+      downloadBriefUrl: preProdDownloadBriefUrl,
+      downloadBriefFilename: preProdDownloadBriefFilename,
     };
     onUpdatePreProduction(updatedConfig);
     triggerSaveToast("Pre-production configuration saved successfully.");
+  };
+
+  const handlePreProdBriefUpload = async (file: File) => {
+    try {
+      setPreProdBriefUploadProgress(0);
+      const downloadUrl = await uploadWithProgress(file, `brief-${Date.now()}-${file.name}`, (p) => {
+        setPreProdBriefUploadProgress(p);
+      });
+      setPreProdDownloadBriefUrl(downloadUrl);
+      setPreProdDownloadBriefFilename(file.name);
+      triggerSaveToast(`Production brief file "${file.name}" uploaded successfully! Remember to save changes.`);
+      setTimeout(() => {
+        setPreProdBriefUploadProgress(null);
+      }, 3000);
+    } catch (err) {
+      console.error("Brief file upload failed:", err);
+      alert("File upload failed. Please verify storage configuration.");
+      setPreProdBriefUploadProgress(null);
+    }
   };
 
   const handlePreProdImageUpload = async (index: number, file: File) => {
@@ -3019,6 +3045,108 @@ service firebase.storage {
                               className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2.5 focus:border-white focus:outline-none font-light tracking-wide leading-relaxed"
                               placeholder="To create a hyper-realistic digital twin..."
                             />
+                          </div>
+                        </div>
+
+                        {/* Downloadable Production Brief File */}
+                        <div className="border border-neutral-900 p-5 bg-neutral-950/40 space-y-4 rounded-sm font-sans-luxury">
+                          <h5 className="font-serif-luxury text-sm text-white uppercase tracking-widest pb-1 border-b border-neutral-900/60">
+                            Downloadable Production Brief File / Guide
+                          </h5>
+                          <p className="text-[9px] text-neutral-500 uppercase tracking-widest mt-1">
+                            Upload a PDF guide or brief image. When a client clicks the download button on the main site, this file will be downloaded to their device.
+                          </p>
+
+                          {preProdDownloadBriefUrl && (
+                            <div className="p-3 border border-neutral-900 bg-neutral-950/60 rounded-sm flex items-center justify-between">
+                              <div className="flex items-center space-x-3 min-w-0">
+                                <FileText className="text-white flex-shrink-0" size={16} />
+                                <div className="min-w-0">
+                                  <span className="text-[10px] font-bold text-white uppercase tracking-wider block truncate">
+                                    {preProdDownloadBriefFilename || "Uploaded Brief File"}
+                                  </span>
+                                  <a 
+                                    href={preProdDownloadBriefUrl} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="text-[9px] text-neutral-500 hover:text-white uppercase tracking-widest font-mono underline"
+                                  >
+                                    View File
+                                  </a>
+                                </div>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setPreProdDownloadBriefUrl("");
+                                  setPreProdDownloadBriefFilename("");
+                                }}
+                                className="text-neutral-500 hover:text-red-500 p-2 border border-neutral-900 hover:border-neutral-800 transition-colors cursor-pointer rounded-sm"
+                                title="Remove Brief File"
+                              >
+                                <Trash2 size={12} />
+                              </button>
+                            </div>
+                          )}
+
+                          <div className="space-y-3">
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="file"
+                                accept="application/pdf,image/*"
+                                onChange={async (e) => {
+                                  if (e.target.files && e.target.files[0]) {
+                                    await handlePreProdBriefUpload(e.target.files[0]);
+                                  }
+                                }}
+                                className="hidden"
+                                id="preprod-brief-upload"
+                              />
+                              <label
+                                htmlFor="preprod-brief-upload"
+                                className="flex items-center justify-center space-x-1.5 bg-neutral-900 border border-neutral-850 text-[8px] tracking-widest uppercase text-white py-2 px-3 hover:bg-neutral-800 cursor-pointer text-center font-bold h-[32px] w-full rounded-sm"
+                              >
+                                <Upload size={10} />
+                                <span>Upload PDF or Image Brief</span>
+                              </label>
+                            </div>
+
+                            {preProdBriefUploadProgress !== null && (
+                              <div className="space-y-1">
+                                <div className="w-full bg-neutral-900 h-1 rounded-sm overflow-hidden relative">
+                                  <div 
+                                    className="bg-white h-full transition-all duration-300"
+                                    style={{ width: `${preProdBriefUploadProgress}%` }}
+                                  />
+                                </div>
+                                <span className="font-mono text-[7px] text-neutral-400 block tracking-widest uppercase">
+                                  UPLOADING: {preProdBriefUploadProgress}%
+                                </span>
+                              </div>
+                            )}
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                              <div className="flex flex-col space-y-1">
+                                <label className="text-[8px] tracking-widest uppercase text-neutral-500 font-mono">Or paste brief URL</label>
+                                <input
+                                  type="url"
+                                  value={preProdDownloadBriefUrl || ""}
+                                  placeholder="https://..."
+                                  onChange={(e) => setPreProdDownloadBriefUrl(e.target.value)}
+                                  className="w-full bg-neutral-950 border border-neutral-850 text-[10px] text-white px-2 py-2 focus:border-white focus:outline-none font-mono"
+                                />
+                              </div>
+                              <div className="flex flex-col space-y-1">
+                                <label className="text-[8px] tracking-widest uppercase text-neutral-500 font-mono">Custom Filename (e.g. guide.pdf)</label>
+                                <input
+                                  type="text"
+                                  value={preProdDownloadBriefFilename || ""}
+                                  placeholder="Vue_Production_Brief.pdf"
+                                  onChange={(e) => setPreProdDownloadBriefFilename(e.target.value)}
+                                  className="w-full bg-neutral-950 border border-neutral-850 text-[10px] text-white px-2 py-2 focus:border-white focus:outline-none font-mono"
+                                />
+                              </div>
+                            </div>
                           </div>
                         </div>
 

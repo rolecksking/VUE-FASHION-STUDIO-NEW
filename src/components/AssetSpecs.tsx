@@ -48,8 +48,65 @@ export default function AssetSpecs({ preProductionConfig }: AssetSpecsProps) {
     "/src/assets/images/vibrant_emerald_green_eyewear_1783498183736.jpg"
   ];
 
-  const triggerDownload = () => {
+  const triggerDownload = async () => {
     setDownloading(true);
+
+    if (config.downloadBriefUrl) {
+      try {
+        const response = await fetch(config.downloadBriefUrl);
+        if (!response.ok) throw new Error("Network response was not ok");
+        const blob = await response.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = blobUrl;
+        
+        let filename = config.downloadBriefFilename || "Vue_Fashion_Studio_Asset_Brief";
+        if (!filename.includes(".")) {
+          const mimeType = blob.type;
+          if (mimeType.includes("pdf")) {
+            filename += ".pdf";
+          } else if (mimeType.includes("png")) {
+            filename += ".png";
+          } else if (mimeType.includes("jpeg") || mimeType.includes("jpg")) {
+            filename += ".jpg";
+          } else if (mimeType.includes("webp")) {
+            filename += ".webp";
+          } else {
+            const cleanUrl = config.downloadBriefUrl.split("?")[0];
+            const ext = cleanUrl.split(".").pop();
+            if (ext && ext.length <= 4) {
+              filename += `.${ext}`;
+            } else {
+              filename += ".pdf";
+            }
+          }
+        }
+
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(blobUrl);
+        setDownloading(false);
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 4000);
+        return;
+      } catch (err) {
+        console.warn("Direct blob download failed, falling back to direct navigation/opening:", err);
+        const link = document.createElement("a");
+        link.href = config.downloadBriefUrl;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.download = config.downloadBriefFilename || "Vue_Fashion_Studio_Asset_Brief";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setDownloading(false);
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 4000);
+        return;
+      }
+    }
 
     // Dynamic high-fidelity technical brief document content for the downloadable TXT file
     const technicalBriefText = `====================================================================
@@ -201,7 +258,11 @@ SUPPORT: tech-ateliers@vuefashionstudio.com
                   className="absolute left-0 right-0 -bottom-16 bg-neutral-950 border border-neutral-850 px-4 py-3.5 flex items-center space-x-3 text-[10px] text-neutral-300 rounded-sm"
                 >
                   <CheckCircle className="text-white flex-shrink-0" size={14} />
-                  <span className="font-sans-luxury tracking-wide">Vue_Fashion_Studio_Asset_Brief.txt downloaded. Full technical guidelines (TIFF, EXR, ACEScg, Clo3D) packaged successfully.</span>
+                  <span className="font-sans-luxury tracking-wide">
+                    {config.downloadBriefUrl 
+                      ? `${config.downloadBriefFilename || "Production_Brief_Guide"} downloaded successfully.` 
+                      : "Vue_Fashion_Studio_Asset_Brief.txt downloaded. Full technical guidelines (TIFF, EXR, ACEScg, Clo3D) packaged successfully."}
+                  </span>
                 </motion.div>
               )}
             </div>
