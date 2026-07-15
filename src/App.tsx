@@ -367,7 +367,7 @@ export default function App() {
           key="preloader"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, transition: { duration: 0.6, ease: "easeInOut" } }}
-          className="fixed inset-0 z-50 bg-neutral-950 flex flex-col items-center justify-center font-sans-luxury"
+          className="fixed inset-0 z-50 bg-neutral-950 flex flex-col items-center justify-center font-sans"
         >
           <div className="text-center space-y-6 max-w-md px-6">
             <motion.div
@@ -376,10 +376,10 @@ export default function App() {
               transition={{ duration: 1, ease: "easeOut" }}
               className="space-y-2"
             >
-              <h1 className="text-white font-serif-luxury text-3xl md:text-4xl tracking-[0.3em] uppercase">
+              <h1 className="text-white font-serif text-3xl md:text-4xl tracking-[0.3em] uppercase">
                 V U E
               </h1>
-              <p className="text-neutral-500 font-sans-luxury text-[9px] tracking-[0.4em] uppercase">
+              <p className="text-neutral-500 font-sans text-[9px] tracking-[0.4em] uppercase">
                 F A S H I O N   S T U D I O
               </p>
             </motion.div>
@@ -415,7 +415,7 @@ export default function App() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="bg-black text-white relative min-h-screen selection:bg-white selection:text-black antialiased font-sans-luxury"
+          className="bg-black text-white relative min-h-screen selection:bg-white selection:text-black antialiased font-sans"
         >
           {/* Absolute Quiet Luxury Header with Language Selector & Mobile Hamburger */}
           <Header lang={lang} setLang={setLang} />
