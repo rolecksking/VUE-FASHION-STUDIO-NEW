@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import { getCMSConfig, saveCMSConfig, getInquiries } from "./firebase";
 import Header from "./components/Header";
 import HeroSlider from "./components/HeroSlider";
@@ -182,6 +183,11 @@ export default function App() {
   const [selectedScope, setSelectedScope] = useState<string>("");
   const [lang, setLang] = useState<string>("EN");
 
+  // Show luxury loading screen for first-time visitors who have no cached content in localStorage
+  const [loading, setLoading] = useState(() => {
+    return localStorage.getItem("vfs_cms_hero") === null;
+  });
+
   // Load state or use high-fidelity vibrant full-color defaults
   const [heroImages, setHeroImages] = useState<Array<{ url: string; title: string; alt: string }>>(() => {
     const raw = localStorage.getItem("vfs_cms_hero");
@@ -260,26 +266,58 @@ export default function App() {
 
     // Fetch initial CMS configuration from Firestore database
     const initFirebaseCMS = async () => {
+      // Set a robust timeout so first-time visitors are never stuck if connection is extremely slow
+      const timeoutId = setTimeout(() => {
+        setLoading(false);
+      }, 3500);
+
       try {
-        const firestoreHero = await getCMSConfig("hero");
-        if (firestoreHero) setHeroImages(firestoreHero);
+        // Query all configurations in parallel to reduce load time
+        const [
+          firestoreHero,
+          firestoreManifesto,
+          firestorePortfolio,
+          firestoreServices,
+          firestoreLogos,
+          firestorePreProd
+        ] = await Promise.all([
+          getCMSConfig("hero"),
+          getCMSConfig("manifesto"),
+          getCMSConfig("portfolio"),
+          getCMSConfig("services"),
+          getCMSConfig("partner_logos"),
+          getCMSConfig("preproduction")
+        ]);
 
-        const firestoreManifesto = await getCMSConfig("manifesto");
-        if (firestoreManifesto) setManifesto(firestoreManifesto);
-
-        const firestorePortfolio = await getCMSConfig("portfolio");
-        if (firestorePortfolio) setPortfolioItems(firestorePortfolio);
-
-        const firestoreServices = await getCMSConfig("services");
-        if (firestoreServices) setServicesTiers(firestoreServices);
-
-        const firestoreLogos = await getCMSConfig("partner_logos");
-        if (firestoreLogos) setPartnerLogosConfig(firestoreLogos);
-
-        const firestorePreProd = await getCMSConfig("preproduction");
-        if (firestorePreProd) setPreProductionConfig(firestorePreProd);
+        if (firestoreHero) {
+          setHeroImages(firestoreHero);
+          localStorage.setItem("vfs_cms_hero", JSON.stringify(firestoreHero));
+        }
+        if (firestoreManifesto) {
+          setManifesto(firestoreManifesto);
+          localStorage.setItem("vfs_cms_manifesto_v2", JSON.stringify(firestoreManifesto));
+        }
+        if (firestorePortfolio) {
+          setPortfolioItems(firestorePortfolio);
+          localStorage.setItem("vfs_cms_portfolio", JSON.stringify(firestorePortfolio));
+        }
+        if (firestoreServices) {
+          setServicesTiers(firestoreServices);
+          localStorage.setItem("vfs_cms_services_v2", JSON.stringify(firestoreServices));
+        }
+        if (firestoreLogos) {
+          setPartnerLogosConfig(firestoreLogos);
+          localStorage.setItem("vfs_cms_partner_logos", JSON.stringify(firestoreLogos));
+        }
+        if (firestorePreProd) {
+          setPreProductionConfig(firestorePreProd);
+          localStorage.setItem("vfs_cms_preproduction", JSON.stringify(firestorePreProd));
+        }
       } catch (err) {
         console.error("Failed to fetch initial cloud configurations:", err);
+      } finally {
+        clearTimeout(timeoutId);
+        setLoading(false);
       }
     };
 
@@ -323,62 +361,119 @@ export default function App() {
   };
 
   return (
-    <div className="bg-black text-white relative min-h-screen selection:bg-white selection:text-black antialiased">
-      {/* Absolute Quiet Luxury Header with Language Selector & Mobile Hamburger */}
-      <Header lang={lang} setLang={setLang} />
+    <AnimatePresence mode="wait">
+      {loading ? (
+        <motion.div
+          key="preloader"
+          initial={{ opacity: 1 }}
+          exit={{ opacity: 0, transition: { duration: 0.6, ease: "easeInOut" } }}
+          className="fixed inset-0 z-50 bg-neutral-950 flex flex-col items-center justify-center font-sans-luxury"
+        >
+          <div className="text-center space-y-6 max-w-md px-6">
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, ease: "easeOut" }}
+              className="space-y-2"
+            >
+              <h1 className="text-white font-serif-luxury text-3xl md:text-4xl tracking-[0.3em] uppercase">
+                V U E
+              </h1>
+              <p className="text-neutral-500 font-sans-luxury text-[9px] tracking-[0.4em] uppercase">
+                F A S H I O N   S T U D I O
+              </p>
+            </motion.div>
+            
+            {/* Elegant luxury loading line */}
+            <div className="w-40 h-[1px] bg-neutral-900 mx-auto overflow-hidden relative">
+              <motion.div 
+                className="h-full bg-white w-16 absolute left-0"
+                animate={{
+                  x: ["-100%", "250%"]
+                }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 1.8,
+                  ease: "easeInOut"
+                }}
+              />
+            </div>
 
-      {/* Main Single Page Sections */}
-      <main>
-        {/* Full screen HD Slider Hero with integrated Brand Manifesto (with language translation) */}
-        <HeroSlider images={heroImages} manifesto={getTranslatedManifesto()} />
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.4 }}
+              transition={{ delay: 0.6, duration: 0.8 }}
+              className="text-[8px] text-white tracking-[0.2em] uppercase font-mono"
+            >
+              Calibrating Atelier Assets...
+            </motion.p>
+          </div>
+        </motion.div>
+      ) : (
+        <motion.div
+          key="main-content"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="bg-black text-white relative min-h-screen selection:bg-white selection:text-black antialiased font-sans-luxury"
+        >
+          {/* Absolute Quiet Luxury Header with Language Selector & Mobile Hamburger */}
+          <Header lang={lang} setLang={setLang} />
 
-        {/* Scrolling Fashion Partner Logos (Client Portfolio Marquee) */}
-        <PartnerLogos config={partnerLogosConfig} />
+          {/* Main Single Page Sections */}
+          <main>
+            {/* Full screen HD Slider Hero with integrated Brand Manifesto (with language translation) */}
+            <HeroSlider images={heroImages} manifesto={getTranslatedManifesto()} />
 
-        {/* Services & Tiered Production Tables (Campaign Builder) - Directly below Hero */}
-        <Services tiers={servicesTiers} onRequestTier={setSelectedScope} />
+            {/* Scrolling Fashion Partner Logos (Client Portfolio Marquee) */}
+            <PartnerLogos config={partnerLogosConfig} />
 
-        {/* Client Asset Specs and Downloader (PRE-PRODUCTION PREPARATION) */}
-        <AssetSpecs preProductionConfig={preProductionConfig} />
+            {/* Services & Tiered Production Tables (Campaign Builder) - Directly below Hero */}
+            <Services tiers={servicesTiers} onRequestTier={setSelectedScope} />
 
-        {/* Campaigns Portfolio Gallery (Editorial Campaigns) */}
-        <Portfolio items={portfolioItems} />
+            {/* Client Asset Specs and Downloader (PRE-PRODUCTION PREPARATION) */}
+            <AssetSpecs preProductionConfig={preProductionConfig} />
 
-        {/* Bespoke Contact Inquiry Form (Bespoke Inquiries) */}
-        <InquiryForm 
-          onInquirySubmitted={updateInquiryCount} 
-          tiers={servicesTiers}
-          selectedScope={selectedScope}
-        />
-      </main>
+            {/* Campaigns Portfolio Gallery (Editorial Campaigns) */}
+            <Portfolio items={portfolioItems} />
 
-      {/* Footer with Language Sensitivity */}
-      <Footer onOpenPortal={() => setPortalOpen(true)} lang={lang} />
+            {/* Bespoke Contact Inquiry Form (Bespoke Inquiries) */}
+            <InquiryForm 
+              onInquirySubmitted={updateInquiryCount} 
+              tiers={servicesTiers}
+              selectedScope={selectedScope}
+            />
+          </main>
 
-      {/* Control Center Portal (Submissions & CMS Drawer) */}
-      <PortalInquiries
-        isOpen={portalOpen}
-        onClose={() => setPortalOpen(false)}
-        onRefreshCount={updateInquiryCount}
-        
-        // CMS Integration Props
-        heroImages={heroImages}
-        onUpdateHeroImages={handleUpdateHero}
-        manifesto={manifesto}
-        onUpdateManifesto={handleUpdateManifesto}
-        portfolioItems={portfolioItems}
-        onUpdatePortfolioItems={handleUpdatePortfolio}
-        servicesTiers={servicesTiers}
-        onUpdateServicesTiers={handleUpdateServices}
+          {/* Footer with Language Sensitivity */}
+          <Footer onOpenPortal={() => setPortalOpen(true)} lang={lang} />
 
-        // Partner Logos Props
-        partnerLogosConfig={partnerLogosConfig}
-        onUpdatePartnerLogos={handleUpdatePartnerLogos}
+          {/* Control Center Portal (Submissions & CMS Drawer) */}
+          <PortalInquiries
+            isOpen={portalOpen}
+            onClose={() => setPortalOpen(false)}
+            onRefreshCount={updateInquiryCount}
+            
+            // CMS Integration Props
+            heroImages={heroImages}
+            onUpdateHeroImages={handleUpdateHero}
+            manifesto={manifesto}
+            onUpdateManifesto={handleUpdateManifesto}
+            portfolioItems={portfolioItems}
+            onUpdatePortfolioItems={handleUpdatePortfolio}
+            servicesTiers={servicesTiers}
+            onUpdateServicesTiers={handleUpdateServices}
 
-        // Pre-Production Config Props
-        preProductionConfig={preProductionConfig}
-        onUpdatePreProduction={handleUpdatePreProduction}
-      />
-    </div>
+            // Partner Logos Props
+            partnerLogosConfig={partnerLogosConfig}
+            onUpdatePartnerLogos={handleUpdatePartnerLogos}
+
+            // Pre-Production Config Props
+            preProductionConfig={preProductionConfig}
+            onUpdatePreProduction={handleUpdatePreProduction}
+          />
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
