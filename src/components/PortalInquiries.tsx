@@ -324,8 +324,8 @@ export default function PortalInquiries({
       loadSmtpConfig();
       // Sync local edit states with current global values
       setLocalManifesto({ ...manifesto });
-      setLocalHero(Array.isArray(heroImages) ? [...heroImages] : []);
-      setLocalTiers(Array.isArray(servicesTiers) ? [...servicesTiers] : []);
+      setLocalHero([...heroImages]);
+      setLocalTiers([...servicesTiers]);
 
       if (preProductionConfig) {
         setPreProdTitle(preProductionConfig.title || "");
@@ -762,13 +762,12 @@ export default function PortalInquiries({
   };
 
   const resetAllCMSToDefaults = () => {
-    if (window.confirm("Reset all CMS configs (Images, Manifesto, Services, Logos, Specs) back to pristine studio defaults? This cannot be undone.")) {
+    if (window.confirm("Reset all CMS configs (Images, Manifesto, Services) back to pristine studio defaults? This cannot be undone.")) {
       localStorage.removeItem("vfs_cms_hero");
-      localStorage.removeItem("vfs_cms_manifesto_v2");
+      localStorage.removeItem("vfs_cms_manifesto");
       localStorage.removeItem("vfs_cms_portfolio");
-      localStorage.removeItem("vfs_cms_services_v2");
-      localStorage.removeItem("vfs_cms_partner_logos");
-      localStorage.removeItem("vfs_cms_preproduction");
+      localStorage.removeItem("vfs_cms_services");
+      localStorage.removeItem("vfs_cms_specs");
       
       // Force page reload to reinitialize pristine defaults
       window.location.reload();
@@ -2231,71 +2230,6 @@ export default function PortalInquiries({
                                     setLocalTiers(next);
                                   }}
                                   className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2 focus:border-white focus:outline-none font-light"
-                                />
-                              </div>
-
-                              {/* Dynamic Pricing Engine Rates */}
-                              <div className="flex flex-col space-y-1.5">
-                                <label className="text-[9px] tracking-widest uppercase text-neutral-400">Base Price per Look ($)</label>
-                                <input
-                                  type="number"
-                                  value={tier.baseRate !== undefined ? tier.baseRate : ""}
-                                  placeholder={tIdx === 0 ? "2000" : tIdx === 1 ? "1750" : "1500"}
-                                  onChange={(e) => {
-                                    const next = [...localTiers];
-                                    const val = e.target.value === "" ? undefined : parseInt(e.target.value, 10);
-                                    next[tIdx].baseRate = isNaN(val as any) ? undefined : val;
-                                    setLocalTiers(next);
-                                  }}
-                                  className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2 focus:border-white focus:outline-none font-light font-mono"
-                                />
-                              </div>
-
-                              <div className="flex flex-col space-y-1.5">
-                                <label className="text-[9px] tracking-widest uppercase text-neutral-400">Model Addon Fee ($)</label>
-                                <input
-                                  type="number"
-                                  value={tier.modelAddonRate !== undefined ? tier.modelAddonRate : ""}
-                                  placeholder="250"
-                                  onChange={(e) => {
-                                    const next = [...localTiers];
-                                    const val = e.target.value === "" ? undefined : parseInt(e.target.value, 10);
-                                    next[tIdx].modelAddonRate = isNaN(val as any) ? undefined : val;
-                                    setLocalTiers(next);
-                                  }}
-                                  className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2 focus:border-white focus:outline-none font-light font-mono"
-                                />
-                              </div>
-
-                              <div className="flex flex-col space-y-1.5">
-                                <label className="text-[9px] tracking-widest uppercase text-neutral-400">Multi-Location Fee ($)</label>
-                                <input
-                                  type="number"
-                                  value={tier.scopeAddonRate !== undefined ? tier.scopeAddonRate : ""}
-                                  placeholder="3500"
-                                  onChange={(e) => {
-                                    const next = [...localTiers];
-                                    const val = e.target.value === "" ? undefined : parseInt(e.target.value, 10);
-                                    next[tIdx].scopeAddonRate = isNaN(val as any) ? undefined : val;
-                                    setLocalTiers(next);
-                                  }}
-                                  className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2 focus:border-white focus:outline-none font-light font-mono"
-                                />
-                              </div>
-
-                              <div className="flex flex-col space-y-1.5">
-                                <label className="text-[9px] tracking-widest uppercase text-neutral-400">Video Addon Fee ($)</label>
-                                <input
-                                  type="number"
-                                  value={tier.videoAddonRate !== undefined ? tier.videoAddonRate : ""}
-                                  placeholder="2500"
-                                  onChange={(e) => {
-                                    const next = [...localTiers];
-                                    const val = e.target.value === "" ? undefined : parseInt(e.target.value, 10);
-                                    next[tIdx].videoAddonRate = isNaN(val as any) ? undefined : val;
-                                    setLocalTiers(next);
-                                  }}
-                                  className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2 focus:border-white focus:outline-none font-light font-mono"
                                 />
                               </div>
                             </div>

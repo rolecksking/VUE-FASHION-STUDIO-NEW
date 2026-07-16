@@ -1,6 +1,6 @@
 // Firebase Studio Configuration for VUE FASHION STUDIO
 import { initializeApp, getApp, getApps } from "firebase/app";
-import { initializeFirestore, getFirestore, doc, getDoc, setDoc, collection, addDoc, getDocs, deleteDoc, query, orderBy } from "firebase/firestore";
+import { initializeFirestore, doc, getDoc, setDoc, collection, addDoc, getDocs, deleteDoc, query, orderBy } from "firebase/firestore";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { getAuth } from "firebase/auth";
 
@@ -55,20 +55,8 @@ export function getFirebaseConfig() {
 
 export const firebaseConfig = getFirebaseConfig();
 
-// Initialize Firebase App safely
-export const app = (() => {
-  try {
-    return getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-  } catch (e) {
-    console.error("[Firebase] App initialization failed, falling back to defaultSandboxConfig:", e);
-    try {
-      return getApps().length === 0 ? initializeApp(defaultSandboxConfig) : getApp();
-    } catch (err2) {
-      console.error("[Firebase] Critical: All App initialization attempts failed:", err2);
-      return null as any;
-    }
-  }
-})();
+// Initialize Firebase App
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
 // Determine Database ID: 
 // Sandbox uses: "ai-studio-vuefashionstudio-56f91c08-f344-42f3-87a4-556a733d1ca7"
@@ -83,45 +71,14 @@ const getDatabaseId = () => {
 
 export const dbId = getDatabaseId();
 
-// Initialize Firestore safely
-export const db = (() => {
-  if (!app) return null as any;
-  try {
-    const targetDbId = dbId === "(default)" ? undefined : dbId;
-    return getFirestore(app, targetDbId);
-  } catch (e) {
-    console.warn("[Firebase] getFirestore failed, attempting initializeFirestore:", e);
-    try {
-      return dbId === "(default)"
-        ? initializeFirestore(app, {})
-        : initializeFirestore(app, {}, dbId);
-    } catch (err2) {
-      console.error("[Firebase] Critical: Firestore initialization failed:", err2);
-      return null as any;
-    }
-  }
-})();
+// Initialize Firestore with appropriate databaseId
+export const db = dbId === "(default)"
+  ? initializeFirestore(app, {})
+  : initializeFirestore(app, {}, dbId);
 
-// Initialize Storage and Auth safely
-export const storage = (() => {
-  if (!app) return null as any;
-  try {
-    return getStorage(app);
-  } catch (e) {
-    console.error("[Firebase] Storage initialization failed:", e);
-    return null as any;
-  }
-})();
-
-export const auth = (() => {
-  if (!app) return null as any;
-  try {
-    return getAuth(app);
-  } catch (e) {
-    console.error("[Firebase] Auth initialization failed:", e);
-    return null as any;
-  }
-})();
+// Initialize Storage and Auth
+export const storage = getStorage(app);
+export const auth = getAuth(app);
 
 export enum OperationType {
   CREATE = 'create',
@@ -153,12 +110,12 @@ export function handleFirestoreError(error: any, operationType: OperationType, p
   const errInfo: FirestoreErrorInfo = {
     error: error instanceof Error ? error.message : String(error),
     authInfo: {
-      userId: auth?.currentUser?.uid || null,
-      email: auth?.currentUser?.email || null,
-      emailVerified: auth?.currentUser?.emailVerified || null,
-      isAnonymous: auth?.currentUser?.isAnonymous || null,
-      tenantId: auth?.currentUser?.tenantId || null,
-      providerInfo: auth?.currentUser?.providerData?.map(provider => ({
+      userId: auth.currentUser?.uid || null,
+      email: auth.currentUser?.email || null,
+      emailVerified: auth.currentUser?.emailVerified || null,
+      isAnonymous: auth.currentUser?.isAnonymous || null,
+      tenantId: auth.currentUser?.tenantId || null,
+      providerInfo: auth.currentUser?.providerData?.map(provider => ({
         providerId: provider.providerId,
         email: provider.email,
       })) || []
@@ -174,10 +131,6 @@ export function handleFirestoreError(error: any, operationType: OperationType, p
 export async function saveCMSConfig(docId: string, data: any) {
   const path = `cms_config/${docId}`;
   try {
-    if (!db) {
-      console.warn(`[Firebase] Firestore is not initialized. Cannot save config to ${path}`);
-      return false;
-    }
     const docRef = doc(db, "cms_config", docId);
     await setDoc(docRef, { data, updatedAt: new Date().toISOString() });
     return true;
@@ -191,10 +144,6 @@ export async function saveCMSConfig(docId: string, data: any) {
 export async function getCMSConfig(docId: string) {
   const path = `cms_config/${docId}`;
   try {
-    if (!db) {
-      console.warn(`[Firebase] Firestore is not initialized. Cannot fetch config from ${path}`);
-      return null;
-    }
     const docRef = doc(db, "cms_config", docId);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
@@ -214,10 +163,6 @@ export async function getCMSConfig(docId: string) {
 export async function saveInquiry(inquiry: any) {
   const path = `inquiries/${inquiry.id}`;
   try {
-    if (!db) {
-      console.warn(`[Firebase] Firestore is not initialized. Cannot save inquiry to ${path}`);
-      return false;
-    }
     // Save to the inquiries collection
     const docRef = doc(db, "inquiries", inquiry.id);
     await setDoc(docRef, {
@@ -235,10 +180,6 @@ export async function saveInquiry(inquiry: any) {
 export async function getInquiries() {
   const path = "inquiries";
   try {
-    if (!db) {
-      console.warn(`[Firebase] Firestore is not initialized. Cannot fetch inquiries.`);
-      return null;
-    }
     const q = query(collection(db, "inquiries"), orderBy("createdAt", "desc"));
     const querySnapshot = await getDocs(q);
     const items: any[] = [];
@@ -260,10 +201,6 @@ export async function getInquiries() {
 export async function deleteInquiryFromFirebase(id: string) {
   const path = `inquiries/${id}`;
   try {
-    if (!db) {
-      console.warn(`[Firebase] Firestore is not initialized. Cannot delete inquiry ${path}`);
-      return false;
-    }
     const docRef = doc(db, "inquiries", id);
     await deleteDoc(docRef);
     return true;

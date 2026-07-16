@@ -11,8 +11,6 @@ interface InquiryFormProps {
 }
 
 export default function InquiryForm({ onInquirySubmitted, tiers, selectedScope }: InquiryFormProps) {
-  const safeTiers = Array.isArray(tiers) ? tiers : [];
-
   const [formData, setFormData] = useState({
     name: "",
     brand: "",
@@ -37,8 +35,8 @@ export default function InquiryForm({ onInquirySubmitted, tiers, selectedScope }
 
   // Set default scope on load/tiers update
   useEffect(() => {
-    if (safeTiers.length > 0 && !formData.scope) {
-      setFormData((prev) => ({ ...prev, scope: `${safeTiers[0].name} - ${safeTiers[0].tagline}` }));
+    if (tiers && tiers.length > 0 && !formData.scope) {
+      setFormData((prev) => ({ ...prev, scope: `${tiers[0].name} - ${tiers[0].tagline}` }));
     }
   }, [tiers]);
 
@@ -222,11 +220,11 @@ export default function InquiryForm({ onInquirySubmitted, tiers, selectedScope }
                       className="bg-black border-b border-neutral-800 focus:border-white focus:outline-none py-3 text-sm font-sans-luxury font-light text-white tracking-wide transition-colors duration-300 cursor-pointer appearance-none w-full"
                     >
                       {formData.scope && 
-                       !safeTiers.some(t => `${t.name} - ${t.tagline}` === formData.scope) && 
+                       !tiers.some(t => `${t.name} - ${t.tagline}` === formData.scope) && 
                        formData.scope !== "Bespoke Custom Partnership" && (
                         <option value={formData.scope}>{formData.scope}</option>
                       )}
-                      {safeTiers.map((tier) => (
+                      {tiers.map((tier) => (
                         <option key={tier.id} value={`${tier.name} - ${tier.tagline}`}>
                           {tier.name} — {tier.tagline} ({tier.priceEstimate})
                         </option>
