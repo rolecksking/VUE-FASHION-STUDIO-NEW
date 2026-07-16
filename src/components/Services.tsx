@@ -162,14 +162,6 @@ export default function Services({ tiers, onRequestTier, pricingRates }: Service
     createDefaultProduct(
       "Signature Handbag",
       "A luxury leather handbag. We want dramatic editorial close-ups, highlighting the polished gold clasp and the fine grain of the leather. Setup with high contrast studio lighting."
-    ),
-    createDefaultProduct(
-      "Minimalist Linen Blazer",
-      "An unstructured linen blazer. Focus on capturing natural organic textures, flowing drape movement, and soft, warm daylight casting subtle shadows."
-    ),
-    createDefaultProduct(
-      "Architectural Sunglasses",
-      "Acetate frame sunglasses. Sharp product-focused shot with dramatic geometric shadows on raw concrete background, crisp glass reflections."
     )
   ]);
   const [activeProductIndex, setActiveProductIndex] = useState<number>(0);
