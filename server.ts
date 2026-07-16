@@ -222,8 +222,8 @@ async function startServer() {
       // 2. Setup Nodemailer Transporter
       const transporter = nodemailer.createTransport({
         host: smtpConfig.host,
-        port: smtpConfig.port,
-        secure: smtpConfig.port === 465, // SSL for 465, STARTTLS otherwise
+        port: Number(smtpConfig.port),
+        secure: Number(smtpConfig.port) === 465, // SSL for 465, STARTTLS otherwise
         auth: smtpConfig.auth ? {
           user: smtpConfig.username,
           pass: smtpConfig.password,
@@ -233,8 +233,32 @@ async function startServer() {
         }
       });
 
-      const fromEmail = smtpConfig.fromEmail || smtpConfig.username;
       const toEmail = smtpConfig.toEmail || "thevueatelier@gmail.com";
+
+      // Helper to extract domain from an email
+      function getEmailDomain(emailStr: string, fallback: string = "vuefashionstudio.com") {
+        if (!emailStr || typeof emailStr !== 'string') return fallback;
+        const matches = emailStr.match(/@([^>]+)/);
+        if (matches && matches[1]) {
+          return matches[1].replace(/[>]/g, "").trim();
+        }
+        return fallback;
+      }
+
+      const domain = getEmailDomain(toEmail);
+      let fromEmail = "";
+
+      const rawFrom = smtpConfig.fromEmail ? smtpConfig.fromEmail.trim() : "";
+      if (rawFrom.includes("@")) {
+        // Already a valid email or name + email format
+        fromEmail = rawFrom;
+      } else if (rawFrom) {
+        // It is a display name without an email address, e.g. "VUE FASHION STUDIO"
+        fromEmail = `"${rawFrom}" <no-reply@${domain}>`;
+      } else {
+        // Completely empty - default to VUE FASHION STUDIO name with extracted domain
+        fromEmail = `"VUE FASHION STUDIO" <no-reply@${domain}>`;
+      }
 
       // Check if it's a campaign request
       if (inquiry.isCampaign) {
