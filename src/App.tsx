@@ -202,13 +202,29 @@ export default function App() {
 
   // Load state or use high-fidelity vibrant full-color defaults
   const [heroImages, setHeroImages] = useState<Array<{ url: string; title: string; alt: string }>>(() => {
-    const raw = localStorage.getItem("vfs_cms_hero");
-    return raw ? JSON.parse(raw) : INITIAL_HERO;
+    try {
+      const raw = localStorage.getItem("vfs_cms_hero");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {
+      console.warn("Failed to parse localStorage vfs_cms_hero, falling back:", e);
+    }
+    return INITIAL_HERO;
   });
 
   const [manifesto, setManifesto] = useState(() => {
-    const raw = localStorage.getItem("vfs_cms_manifesto_v2");
-    return raw ? JSON.parse(raw) : INITIAL_MANIFESTO;
+    try {
+      const raw = localStorage.getItem("vfs_cms_manifesto_v2");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === "object" && parsed.title) return parsed;
+      }
+    } catch (e) {
+      console.warn("Failed to parse localStorage vfs_cms_manifesto_v2, falling back:", e);
+    }
+    return INITIAL_MANIFESTO;
   });
 
   const getTranslatedManifesto = () => {
@@ -235,23 +251,55 @@ export default function App() {
   };
 
   const [portfolioItems, setPortfolioItems] = useState<CampaignItem[]>(() => {
-    const raw = localStorage.getItem("vfs_cms_portfolio");
-    return raw ? JSON.parse(raw) : INITIAL_PORTFOLIO;
+    try {
+      const raw = localStorage.getItem("vfs_cms_portfolio");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {
+      console.warn("Failed to parse localStorage vfs_cms_portfolio, falling back:", e);
+    }
+    return INITIAL_PORTFOLIO;
   });
 
   const [servicesTiers, setServicesTiers] = useState<ServiceTier[]>(() => {
-    const raw = localStorage.getItem("vfs_cms_services_v2");
-    return raw ? JSON.parse(raw) : INITIAL_SERVICES;
+    try {
+      const raw = localStorage.getItem("vfs_cms_services_v2");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {
+      console.warn("Failed to parse localStorage vfs_cms_services_v2, falling back:", e);
+    }
+    return INITIAL_SERVICES;
   });
 
   const [partnerLogosConfig, setPartnerLogosConfig] = useState<PartnerLogosConfig>(() => {
-    const raw = localStorage.getItem("vfs_cms_partner_logos");
-    return raw ? JSON.parse(raw) : { enabled: true, logos: INITIAL_PARTNER_LOGOS };
+    try {
+      const raw = localStorage.getItem("vfs_cms_partner_logos");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === "object" && Array.isArray(parsed.logos)) return parsed;
+      }
+    } catch (e) {
+      console.warn("Failed to parse localStorage vfs_cms_partner_logos, falling back:", e);
+    }
+    return { enabled: true, logos: INITIAL_PARTNER_LOGOS };
   });
 
   const [preProductionConfig, setPreProductionConfig] = useState<PreProductionConfig>(() => {
-    const raw = localStorage.getItem("vfs_cms_preproduction");
-    return raw ? JSON.parse(raw) : INITIAL_PREPRODUCTION;
+    try {
+      const raw = localStorage.getItem("vfs_cms_preproduction");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === "object" && parsed.title) return parsed;
+      }
+    } catch (e) {
+      console.warn("Failed to parse localStorage vfs_cms_preproduction, falling back:", e);
+    }
+    return INITIAL_PREPRODUCTION;
   });
 
   const updateInquiryCount = async () => {
@@ -301,27 +349,27 @@ export default function App() {
           getCMSConfig("preproduction")
         ]);
 
-        if (firestoreHero) {
+        if (firestoreHero && Array.isArray(firestoreHero) && firestoreHero.length > 0) {
           setHeroImages(firestoreHero);
           localStorage.setItem("vfs_cms_hero", JSON.stringify(firestoreHero));
         }
-        if (firestoreManifesto) {
+        if (firestoreManifesto && typeof firestoreManifesto === "object" && firestoreManifesto.title) {
           setManifesto(firestoreManifesto);
           localStorage.setItem("vfs_cms_manifesto_v2", JSON.stringify(firestoreManifesto));
         }
-        if (firestorePortfolio) {
+        if (firestorePortfolio && Array.isArray(firestorePortfolio) && firestorePortfolio.length > 0) {
           setPortfolioItems(firestorePortfolio);
           localStorage.setItem("vfs_cms_portfolio", JSON.stringify(firestorePortfolio));
         }
-        if (firestoreServices) {
+        if (firestoreServices && Array.isArray(firestoreServices) && firestoreServices.length > 0) {
           setServicesTiers(firestoreServices);
           localStorage.setItem("vfs_cms_services_v2", JSON.stringify(firestoreServices));
         }
-        if (firestoreLogos) {
+        if (firestoreLogos && typeof firestoreLogos === "object" && Array.isArray(firestoreLogos.logos)) {
           setPartnerLogosConfig(firestoreLogos);
           localStorage.setItem("vfs_cms_partner_logos", JSON.stringify(firestoreLogos));
         }
-        if (firestorePreProd) {
+        if (firestorePreProd && typeof firestorePreProd === "object" && firestorePreProd.title) {
           setPreProductionConfig(firestorePreProd);
           localStorage.setItem("vfs_cms_preproduction", JSON.stringify(firestorePreProd));
         }

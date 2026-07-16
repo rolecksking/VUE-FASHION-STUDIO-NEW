@@ -324,8 +324,8 @@ export default function PortalInquiries({
       loadSmtpConfig();
       // Sync local edit states with current global values
       setLocalManifesto({ ...manifesto });
-      setLocalHero([...heroImages]);
-      setLocalTiers([...servicesTiers]);
+      setLocalHero(Array.isArray(heroImages) ? [...heroImages] : []);
+      setLocalTiers(Array.isArray(servicesTiers) ? [...servicesTiers] : []);
 
       if (preProductionConfig) {
         setPreProdTitle(preProductionConfig.title || "");
@@ -762,12 +762,13 @@ export default function PortalInquiries({
   };
 
   const resetAllCMSToDefaults = () => {
-    if (window.confirm("Reset all CMS configs (Images, Manifesto, Services) back to pristine studio defaults? This cannot be undone.")) {
+    if (window.confirm("Reset all CMS configs (Images, Manifesto, Services, Logos, Specs) back to pristine studio defaults? This cannot be undone.")) {
       localStorage.removeItem("vfs_cms_hero");
-      localStorage.removeItem("vfs_cms_manifesto");
+      localStorage.removeItem("vfs_cms_manifesto_v2");
       localStorage.removeItem("vfs_cms_portfolio");
-      localStorage.removeItem("vfs_cms_services");
-      localStorage.removeItem("vfs_cms_specs");
+      localStorage.removeItem("vfs_cms_services_v2");
+      localStorage.removeItem("vfs_cms_partner_logos");
+      localStorage.removeItem("vfs_cms_preproduction");
       
       // Force page reload to reinitialize pristine defaults
       window.location.reload();
