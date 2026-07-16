@@ -84,3 +84,11 @@ export interface PreProductionConfig {
   downloadBriefFilename?: string;
 }
 
+export interface PricingRates {
+  basePrice: number;
+  extraModelPrice: number;
+  extraLocationPrice: number;
+  videoPrice: number;
+}
+
+

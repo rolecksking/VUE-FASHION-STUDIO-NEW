@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ServiceTier } from "../types";
+import { ServiceTier, PricingRates } from "../types";
 import DragDropUpload from "./DragDropUpload";
 import { Clock, Check, Sparkles, Film, Image as ImageIcon, MapPin, Users, Upload, Trash2, Plus, ChevronDown, ChevronUp, AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
 import { saveInquiry, uploadCampaignAsset } from "../firebase";
@@ -145,9 +145,10 @@ const createDefaultProduct = (name: string, description: string = "", images: st
 interface ServicesProps {
   tiers?: ServiceTier[];
   onRequestTier?: (scopeName: string) => void;
+  pricingRates?: PricingRates;
 }
 
-export default function Services({ tiers, onRequestTier }: ServicesProps) {
+export default function Services({ tiers, onRequestTier, pricingRates }: ServicesProps) {
   const activeTiers = tiers && tiers.length > 0 ? tiers : DEFAULT_SERVICE_TIERS;
 
   // Campaign request submission states
@@ -474,22 +475,22 @@ export default function Services({ tiers, onRequestTier }: ServicesProps) {
 
   // Calculate high-fashion production math with per-product custom settings
   const calculatedDetails = productRequests.map(prod => {
-    // Determine base rate per product look based on total count
-    let basePriceNum = 2000;
-    if (looksCount >= 4 && looksCount <= 8) {
-      basePriceNum = 1750;
-    } else if (looksCount >= 9) {
-      basePriceNum = 1500;
-    }
+    // Flat base rate of $300 per product look, including standard model and standard location
+    const basePriceNum = pricingRates?.basePrice ?? 300;
 
+    // Model addon: first model is included, each extra model adds fixed extraModelPrice
     const modelAddon = prod.isBespokeModel && prod.modelsList.length > 1
-      ? 250 * (prod.modelsList.length - 1)
+      ? (pricingRates?.extraModelPrice ?? 150) * (prod.modelsList.length - 1)
       : 0;
 
-    const scopeAddon = prod.productionScope === "multi" ? 3500 : 0;
+    // Location addon: multi-location adds a fixed extraLocationPrice
+    const scopeAddon = prod.productionScope === "multi" 
+      ? (pricingRates?.extraLocationPrice ?? 200) 
+      : 0;
     
+    // Video addon: each video adds a fixed videoPrice
     const effectiveVideoCount = prod.videoCount !== undefined ? prod.videoCount : (prod.videoRequired ? 1 : 0);
-    const videoAddon = effectiveVideoCount * 2500;
+    const videoAddon = effectiveVideoCount * (pricingRates?.videoPrice ?? 250);
 
     const total = basePriceNum + modelAddon + scopeAddon + videoAddon;
 
@@ -971,7 +972,7 @@ export default function Services({ tiers, onRequestTier }: ServicesProps) {
                       </span>
                     </div>
                     <span className={`text-[10px] ${activeProduct.isBespokeModel ? "text-neutral-700" : "text-neutral-500"} font-light block leading-relaxed`}>
-                      Fine-tune features, age, size, ethnicity, and styling elements tailored to your precise collection brief (Curation included; +$250 per additional model variant).
+                      Fine-tune features, age, size, ethnicity, and styling elements tailored to your precise collection brief (Curation included; +${(pricingRates?.extraModelPrice ?? 150).toLocaleString()} per additional model variant).
                     </span>
                   </button>
                 </div>
@@ -989,7 +990,7 @@ export default function Services({ tiers, onRequestTier }: ServicesProps) {
                             Bespoke Model Variants
                           </span>
                           <p className="text-[10px] text-neutral-400 font-light mt-1">
-                            How many unique model castings are required? (First curation included, +$250 per additional variant)
+                            How many unique model castings are required? (First curation included, +${(pricingRates?.extraModelPrice ?? 150).toLocaleString()} per additional variant)
                           </p>
                         </div>
                         <div className="flex items-center space-x-3 bg-neutral-900 p-1.5 border border-neutral-800 rounded-sm">
@@ -1046,7 +1047,7 @@ export default function Services({ tiers, onRequestTier }: ServicesProps) {
                         : "Curating Studio Model (Included)"}
                     </span>
                     <span className="text-[9px] text-neutral-500 italic">
-                      {activeProduct.isBespokeModel && activeProduct.activeModelIndex > 0 ? "+$250 variant surcharge" : "No additional cost"}
+                      {activeProduct.isBespokeModel && activeProduct.activeModelIndex > 0 ? `+$${(pricingRates?.extraModelPrice ?? 150).toLocaleString()} variant surcharge` : "No additional cost"}
                     </span>
                   </div>
 
@@ -1309,7 +1310,7 @@ export default function Services({ tiers, onRequestTier }: ServicesProps) {
                         Multi-Location Campaign
                       </span>
                       <span className={`text-[10px] ${activeProduct.productionScope === "multi" ? "text-neutral-700" : "text-neutral-500"} font-light block leading-relaxed`}>
-                        Highly dynamic. Showcases your collection across diverse curated settings, studio arrangements, or landscapes (+ $3,500).
+                        Highly dynamic. Showcases your collection across diverse curated settings, studio arrangements, or landscapes (+ $${(pricingRates?.extraLocationPrice ?? 200).toLocaleString()}).
                       </span>
                     </div>
                   </button>
@@ -1562,7 +1563,7 @@ export default function Services({ tiers, onRequestTier }: ServicesProps) {
                               Select Video Quantity
                             </label>
                             <span className="text-[9px] font-mono text-neutral-500 uppercase">
-                              +$2,500 per cinematic short
+                              +$${(pricingRates?.videoPrice ?? 250).toLocaleString()} per cinematic short
                             </span>
                           </div>
                           

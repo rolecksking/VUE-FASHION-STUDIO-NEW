@@ -5,7 +5,7 @@ import {
   Settings, Image, FileText, Briefcase, Plus, Save, RotateCcw, CheckCircle, 
   ChevronRight, Inbox, Upload, Database, HelpCircle, Film, Loader2, Play, Edit, Mail
 } from "lucide-react";
-import { Inquiry, CampaignItem, ServiceTier, AssetSpecItem, PartnerLogo, PartnerLogosConfig, PreProductionConfig, PreProductionStep } from "../types";
+import { Inquiry, CampaignItem, ServiceTier, AssetSpecItem, PartnerLogo, PartnerLogosConfig, PreProductionConfig, PreProductionStep, PricingRates } from "../types";
 import DragDropUpload from "./DragDropUpload";
 import { getInquiries, saveInquiry, deleteInquiryFromFirebase, uploadToFirebaseStorage, uploadWithProgress, getFirebaseConfig, defaultSandboxConfig, auth, getCMSConfig, saveCMSConfig } from "../firebase";
 import { 
@@ -38,6 +38,10 @@ interface PortalInquiriesProps {
   // Pre-Production Config Props
   preProductionConfig?: PreProductionConfig;
   onUpdatePreProduction: (config: PreProductionConfig) => void;
+
+  // Pricing Rates CMS Props
+  pricingRates: PricingRates;
+  onUpdatePricingRates: (rates: PricingRates) => void;
 }
 
 type TabType = "inquiries" | "hero_manifesto" | "portfolio" | "pricing_specs" | "database_setup" | "security" | "partners" | "pre_production" | "smtp_config";
@@ -112,7 +116,9 @@ export default function PortalInquiries({
   partnerLogosConfig,
   onUpdatePartnerLogos,
   preProductionConfig,
-  onUpdatePreProduction
+  onUpdatePreProduction,
+  pricingRates,
+  onUpdatePricingRates
 }: PortalInquiriesProps) {
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [passcode, setPasscode] = useState("");
@@ -292,6 +298,12 @@ export default function PortalInquiries({
   const [stepFormTitle, setStepFormTitle] = useState("");
   const [stepFormDesc, setStepFormDesc] = useState("");
 
+  // Flat pricing rates local states
+  const [localBasePrice, setLocalBasePrice] = useState(300);
+  const [localExtraModelPrice, setLocalExtraModelPrice] = useState(150);
+  const [localExtraLocationPrice, setLocalExtraLocationPrice] = useState(200);
+  const [localVideoPrice, setLocalVideoPrice] = useState(250);
+
   // Upload state for preproduction images
   const [preProdImageUploadProgress, setPreProdImageUploadProgress] = useState<{ [key: number]: number | null }>({});
 
@@ -350,8 +362,16 @@ export default function PortalInquiries({
         appId: currentConfig.appId || "",
         databaseId: currentConfig.databaseId || ""
       });
+
+      // Sync local flat pricing rates
+      if (pricingRates) {
+        setLocalBasePrice(pricingRates.basePrice);
+        setLocalExtraModelPrice(pricingRates.extraModelPrice);
+        setLocalExtraLocationPrice(pricingRates.extraLocationPrice);
+        setLocalVideoPrice(pricingRates.videoPrice);
+      }
     }
-  }, [isOpen, manifesto, heroImages, servicesTiers, preProductionConfig]);
+  }, [isOpen, manifesto, heroImages, servicesTiers, preProductionConfig, pricingRates]);
 
   const loadInquiries = async () => {
     try {
@@ -2072,6 +2092,95 @@ export default function PortalInquiries({
                   {activeTab === "pricing_specs" && (
                     <div className="space-y-10 font-sans-luxury text-neutral-300">
                       
+                      {/* Flat Pricing & Fixed Add-on Config */}
+                      <div className="space-y-6 border border-neutral-900 p-5 bg-neutral-950/40 rounded-sm">
+                        <div className="border-b border-neutral-900 pb-3">
+                          <h4 className="font-serif-luxury text-base text-white font-light uppercase tracking-wider">
+                            Flat Rate & Fixed Add-on Pricing
+                          </h4>
+                          <p className="text-[10px] text-neutral-500 uppercase tracking-widest mt-1">
+                            Set the base product look price and the flat surcharge rates for extra casting, locations, or video assets.
+                          </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                          {/* 1. Base Price */}
+                          <div className="flex flex-col space-y-1.5">
+                            <label className="text-[9px] tracking-widest uppercase text-neutral-400 font-semibold font-mono">
+                              Base Price per Product Look ($)
+                            </label>
+                            <input
+                              type="number"
+                              required
+                              value={localBasePrice}
+                              onChange={(e) => setLocalBasePrice(Math.max(0, parseInt(e.target.value) || 0))}
+                              className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2.5 focus:border-white focus:outline-none font-mono"
+                            />
+                          </div>
+
+                          {/* 2. Extra Model Price */}
+                          <div className="flex flex-col space-y-1.5">
+                            <label className="text-[9px] tracking-widest uppercase text-neutral-400 font-semibold font-mono">
+                              Extra Model Casting Surcharge ($)
+                            </label>
+                            <input
+                              type="number"
+                              required
+                              value={localExtraModelPrice}
+                              onChange={(e) => setLocalExtraModelPrice(Math.max(0, parseInt(e.target.value) || 0))}
+                              className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2.5 focus:border-white focus:outline-none font-mono"
+                            />
+                          </div>
+
+                          {/* 3. Extra Location Price */}
+                          <div className="flex flex-col space-y-1.5">
+                            <label className="text-[9px] tracking-widest uppercase text-neutral-400 font-semibold font-mono">
+                              Multi-Location Campaign Surcharge ($)
+                            </label>
+                            <input
+                              type="number"
+                              required
+                              value={localExtraLocationPrice}
+                              onChange={(e) => setLocalExtraLocationPrice(Math.max(0, parseInt(e.target.value) || 0))}
+                              className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2.5 focus:border-white focus:outline-none font-mono"
+                            />
+                          </div>
+
+                          {/* 4. Video Price */}
+                          <div className="flex flex-col space-y-1.5">
+                            <label className="text-[9px] tracking-widest uppercase text-neutral-400 font-semibold font-mono">
+                              Cinematic Short Video Surcharge ($)
+                            </label>
+                            <input
+                              type="number"
+                              required
+                              value={localVideoPrice}
+                              onChange={(e) => setLocalVideoPrice(Math.max(0, parseInt(e.target.value) || 0))}
+                              className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2.5 focus:border-white focus:outline-none font-mono"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="pt-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              onUpdatePricingRates({
+                                basePrice: localBasePrice,
+                                extraModelPrice: localExtraModelPrice,
+                                extraLocationPrice: localExtraLocationPrice,
+                                videoPrice: localVideoPrice
+                              });
+                              triggerSaveToast("Flat pricing rates successfully saved.");
+                            }}
+                            className="w-full bg-white text-black font-sans-luxury text-[10px] tracking-widest uppercase font-semibold py-3 hover:bg-neutral-200 transition-colors flex items-center justify-center space-x-2 cursor-pointer"
+                          >
+                            <Save size={12} />
+                            <span>Save Pricing Surcharges</span>
+                          </button>
+                        </div>
+                      </div>
+
                       {/* Service Tiers Editor */}
                       <div className="space-y-8">
                         <div className="border-b border-neutral-900 pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

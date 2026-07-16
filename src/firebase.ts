@@ -55,30 +55,52 @@ export function getFirebaseConfig() {
 
 export const firebaseConfig = getFirebaseConfig();
 
-// Initialize Firebase App
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+// Resilient Firebase Initializer
+let app: any;
+let db: any;
+let storage: any;
+let auth: any;
+let dbId = "(default)";
 
-// Determine Database ID: 
-// Sandbox uses: "ai-studio-vuefashionstudio-56f91c08-f344-42f3-87a4-556a733d1ca7"
-// Custom/Production projects use the default database "(default)"
-const getDatabaseId = () => {
-  if (firebaseConfig.databaseId) return firebaseConfig.databaseId;
-  if (firebaseConfig.projectId === "magnificent-technique-c3bk6") {
-    return "ai-studio-vuefashionstudio-56f91c08-f344-42f3-87a4-556a733d1ca7";
+try {
+  app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+  
+  const getDatabaseId = () => {
+    if (firebaseConfig && firebaseConfig.databaseId) return firebaseConfig.databaseId;
+    if (firebaseConfig && firebaseConfig.projectId === "magnificent-technique-c3bk6") {
+      return "ai-studio-vuefashionstudio-56f91c08-f344-42f3-87a4-556a733d1ca7";
+    }
+    return "(default)";
+  };
+  
+  dbId = getDatabaseId();
+  db = dbId === "(default)"
+    ? initializeFirestore(app, {})
+    : initializeFirestore(app, {}, dbId);
+    
+  storage = getStorage(app);
+  auth = getAuth(app);
+} catch (error) {
+  console.error("[Firebase] Custom initialization failed. Attempting fallback to sandbox:", error);
+  try {
+    app = getApps().length === 0 ? initializeApp(defaultSandboxConfig) : getApp();
+    dbId = "ai-studio-vuefashionstudio-56f91c08-f344-42f3-87a4-556a733d1ca7";
+    db = initializeFirestore(app, {}, dbId);
+    storage = getStorage(app);
+    auth = getAuth(app);
+  } catch (innerError) {
+    console.error("[Firebase] Fatal initialization failure. Using safe stubs:", innerError);
+    app = null;
+    db = null;
+    storage = null;
+    auth = {
+      currentUser: null,
+      onAuthStateChanged: () => () => {},
+    };
   }
-  return "(default)";
-};
+}
 
-export const dbId = getDatabaseId();
-
-// Initialize Firestore with appropriate databaseId
-export const db = dbId === "(default)"
-  ? initializeFirestore(app, {})
-  : initializeFirestore(app, {}, dbId);
-
-// Initialize Storage and Auth
-export const storage = getStorage(app);
-export const auth = getAuth(app);
+export { app, db, dbId, storage, auth };
 
 export enum OperationType {
   CREATE = 'create',
@@ -129,6 +151,10 @@ export function handleFirestoreError(error: any, operationType: OperationType, p
 
 // Helper to save a single CMS config document to Firestore
 export async function saveCMSConfig(docId: string, data: any) {
+  if (!db) {
+    console.warn("[Firebase] db is not initialized. Skipping saveCMSConfig.");
+    return false;
+  }
   const path = `cms_config/${docId}`;
   try {
     const docRef = doc(db, "cms_config", docId);
@@ -142,6 +168,10 @@ export async function saveCMSConfig(docId: string, data: any) {
 
 // Helper to fetch a single CMS config document from Firestore
 export async function getCMSConfig(docId: string) {
+  if (!db) {
+    console.warn("[Firebase] db is not initialized. Skipping getCMSConfig.");
+    return null;
+  }
   const path = `cms_config/${docId}`;
   try {
     const docRef = doc(db, "cms_config", docId);
@@ -161,6 +191,10 @@ export async function getCMSConfig(docId: string) {
 
 // Helper to save an Inquiry to Firestore
 export async function saveInquiry(inquiry: any) {
+  if (!db) {
+    console.warn("[Firebase] db is not initialized. Skipping saveInquiry.");
+    return false;
+  }
   const path = `inquiries/${inquiry.id}`;
   try {
     // Save to the inquiries collection
@@ -178,6 +212,10 @@ export async function saveInquiry(inquiry: any) {
 
 // Helper to get all Inquiries from Firestore (ordered by newest)
 export async function getInquiries() {
+  if (!db) {
+    console.warn("[Firebase] db is not initialized. Skipping getInquiries.");
+    return [];
+  }
   const path = "inquiries";
   try {
     const q = query(collection(db, "inquiries"), orderBy("createdAt", "desc"));
@@ -199,6 +237,10 @@ export async function getInquiries() {
 
 // Helper to delete an Inquiry from Firestore
 export async function deleteInquiryFromFirebase(id: string) {
+  if (!db) {
+    console.warn("[Firebase] db is not initialized. Skipping deleteInquiryFromFirebase.");
+    return false;
+  }
   const path = `inquiries/${id}`;
   try {
     const docRef = doc(db, "inquiries", id);
@@ -214,6 +256,11 @@ export async function deleteInquiryFromFirebase(id: string) {
 export async function uploadToFirebaseStorage(base64OrFile: string | File, fileName: string): Promise<string> {
   return new Promise(async (resolve, reject) => {
     try {
+      if (!storage) {
+        console.warn("[Firebase] Storage is not initialized.");
+        reject(new Error("STORAGE_NOT_INITIALIZED"));
+        return;
+      }
       let blob: Blob;
       if (typeof base64OrFile === "string") {
         if (base64OrFile.startsWith("data:")) {
@@ -259,6 +306,11 @@ export async function uploadWithProgress(
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     try {
+      if (!storage) {
+        console.warn("[Firebase] Storage is not initialized.");
+        reject(new Error("STORAGE_NOT_INITIALIZED"));
+        return;
+      }
       const storageRef = ref(storage, `uploads/${Date.now()}_${fileName}`);
       const uploadTask = uploadBytesResumable(storageRef, file);
 
@@ -288,6 +340,11 @@ export async function uploadWithProgress(
 export async function uploadCampaignAsset(base64OrFile: string | File, clientEmail: string, fileName: string): Promise<string> {
   return new Promise(async (resolve, reject) => {
     try {
+      if (!storage) {
+        console.warn("[Firebase] Storage is not initialized.");
+        reject(new Error("STORAGE_NOT_INITIALIZED"));
+        return;
+      }
       let blob: Blob;
       if (typeof base64OrFile === "string") {
         if (base64OrFile.startsWith("data:")) {
