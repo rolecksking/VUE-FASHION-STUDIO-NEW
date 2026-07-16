@@ -4,8 +4,18 @@ import { initializeFirestore, doc, getDoc, setDoc, collection, addDoc, getDocs, 
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { getAuth } from "firebase/auth";
 
+export interface FirebaseAppConfig {
+  apiKey: string;
+  authDomain: string;
+  projectId: string;
+  storageBucket: string;
+  messagingSenderId: string;
+  appId: string;
+  databaseId?: string;
+}
+
 // Default Sandbox Config (Provisioned by AI Studio)
-export const defaultSandboxConfig = {
+export const defaultSandboxConfig: FirebaseAppConfig = {
   apiKey: "AIzaSyC3GKkd2mUWQFS5JUYpfWvnvWF1V_DrJOI",
   authDomain: "magnificent-technique-c3bk6.firebaseapp.com",
   projectId: "magnificent-technique-c3bk6",
@@ -14,27 +24,8 @@ export const defaultSandboxConfig = {
   appId: "1:229166615486:web:a743b90bcf115bf43c87ef"
 };
 
-// Retrieve any custom configuration from localStorage or environment variables
-export function getFirebaseConfig() {
-  // Check if server-injected studio config is available
-  const serverConfig = (window as any).__STUDIO_CONFIG__;
-  if (serverConfig && serverConfig.firebase && serverConfig.firebase.projectId) {
-    return serverConfig.firebase;
-  }
-
-  const localRaw = localStorage.getItem("vfs_custom_firebase_config");
-  if (localRaw) {
-    try {
-      const parsed = JSON.parse(localRaw);
-      if (parsed.projectId) {
-        return parsed;
-      }
-    } catch (e) {
-      console.warn("Invalid stored firebase config:", e);
-    }
-  }
-
-  // Fallback to environment variables if provided
+// Retrieve configuration from environment variables or default sandbox
+export function getFirebaseConfig(): FirebaseAppConfig {
   const metaEnv = (import.meta as any).env || {};
   const envConfig = {
     apiKey: metaEnv.VITE_FIREBASE_API_KEY,
@@ -55,7 +46,7 @@ export function getFirebaseConfig() {
 
 export const firebaseConfig = getFirebaseConfig();
 
-// Resilient Firebase Initializer
+// Standard Firebase Initializer
 let app: any;
 let db: any;
 let storage: any;
@@ -81,7 +72,7 @@ try {
   storage = getStorage(app);
   auth = getAuth(app);
 } catch (error) {
-  console.error("[Firebase] Custom initialization failed. Attempting fallback to sandbox:", error);
+  console.error("[Firebase] Initialization failed. Attempting fallback to sandbox:", error);
   try {
     app = getApps().length === 0 ? initializeApp(defaultSandboxConfig) : getApp();
     dbId = "ai-studio-vuefashionstudio-56f91c08-f344-42f3-87a4-556a733d1ca7";
@@ -89,7 +80,7 @@ try {
     storage = getStorage(app);
     auth = getAuth(app);
   } catch (innerError) {
-    console.error("[Firebase] Fatal initialization failure. Using safe stubs:", innerError);
+    console.error("[Firebase] Fatal initialization failure:", innerError);
     app = null;
     db = null;
     storage = null;
