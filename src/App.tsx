@@ -9,19 +9,8 @@ import AssetSpecs from "./components/AssetSpecs";
 import InquiryForm from "./components/InquiryForm";
 import Footer from "./components/Footer";
 import PortalInquiries from "./components/PortalInquiries";
-import { CampaignItem, ServiceTier, AssetSpecItem, PartnerLogo, PartnerLogosConfig, PreProductionConfig, PricingConfig } from "./types";
+import { CampaignItem, ServiceTier, AssetSpecItem, PartnerLogo, PartnerLogosConfig, PreProductionConfig } from "./types";
 import PartnerLogos from "./components/PartnerLogos";
-
-const INITIAL_PRICING: PricingConfig = {
-  currency: "USD",
-  currencySymbol: "$",
-  baseProductPrice: 300,
-  productMultiplierStep: 0.1,
-  extraModelPrice: 250,
-  extraLocationPrice: 1000,
-  videoPrice: 500,
-  addonMultiplierStep: 0.1,
-};
 
 const INITIAL_PREPRODUCTION: PreProductionConfig = {
   subtitle: "03 / PRE-PRODUCTION PREPARATION",
@@ -253,11 +242,6 @@ export default function App() {
     return raw ? JSON.parse(raw) : INITIAL_PREPRODUCTION;
   });
 
-  const [pricingConfig, setPricingConfig] = useState<PricingConfig>(() => {
-    const raw = localStorage.getItem("vfs_cms_pricing");
-    return raw ? JSON.parse(raw) : INITIAL_PRICING;
-  });
-
   const updateInquiryCount = async () => {
     try {
       const list = await getInquiries();
@@ -295,16 +279,14 @@ export default function App() {
           firestorePortfolio,
           firestoreServices,
           firestoreLogos,
-          firestorePreProd,
-          firestorePricing
+          firestorePreProd
         ] = await Promise.all([
           getCMSConfig("hero"),
           getCMSConfig("manifesto"),
           getCMSConfig("portfolio"),
           getCMSConfig("services"),
           getCMSConfig("partner_logos"),
-          getCMSConfig("preproduction"),
-          getCMSConfig("pricing")
+          getCMSConfig("preproduction")
         ]);
 
         if (firestoreHero) {
@@ -330,10 +312,6 @@ export default function App() {
         if (firestorePreProd) {
           setPreProductionConfig(firestorePreProd);
           localStorage.setItem("vfs_cms_preproduction", JSON.stringify(firestorePreProd));
-        }
-        if (firestorePricing) {
-          setPricingConfig(firestorePricing);
-          localStorage.setItem("vfs_cms_pricing", JSON.stringify(firestorePricing));
         }
       } catch (err) {
         console.error("Failed to fetch initial cloud configurations:", err);
@@ -380,12 +358,6 @@ export default function App() {
     setServicesTiers(newServices);
     localStorage.setItem("vfs_cms_services_v2", JSON.stringify(newServices));
     await saveCMSConfig("services", newServices);
-  };
-
-  const handleUpdatePricing = async (newPricing: PricingConfig) => {
-    setPricingConfig(newPricing);
-    localStorage.setItem("vfs_cms_pricing", JSON.stringify(newPricing));
-    await saveCMSConfig("pricing", newPricing);
   };
 
   return (
@@ -457,7 +429,7 @@ export default function App() {
             <PartnerLogos config={partnerLogosConfig} />
 
             {/* Services & Tiered Production Tables (Campaign Builder) - Directly below Hero */}
-            <Services tiers={servicesTiers} onRequestTier={setSelectedScope} pricingConfig={pricingConfig} />
+            <Services tiers={servicesTiers} onRequestTier={setSelectedScope} />
 
             {/* Client Asset Specs and Downloader (PRE-PRODUCTION PREPARATION) */}
             <AssetSpecs preProductionConfig={preProductionConfig} />
@@ -499,10 +471,6 @@ export default function App() {
             // Pre-Production Config Props
             preProductionConfig={preProductionConfig}
             onUpdatePreProduction={handleUpdatePreProduction}
-
-            // Pricing Config Props
-            pricingConfig={pricingConfig}
-            onUpdatePricingConfig={handleUpdatePricing}
           />
         </motion.div>
       )}

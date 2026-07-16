@@ -481,10 +481,8 @@ async function startServer() {
     }
   });
 
-  // Vite middleware for development (with robust production fallback)
-  const isProd = process.env.NODE_ENV === "production";
-
-  if (!isProd) {
+  // Vite middleware for development
+  if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",

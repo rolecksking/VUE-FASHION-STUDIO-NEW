@@ -84,15 +84,3 @@ export interface PreProductionConfig {
   downloadBriefFilename?: string;
 }
 
-export interface PricingConfig {
-  currency: string;
-  currencySymbol: string;
-  baseProductPrice: number;
-  productMultiplierStep: number;
-  extraModelPrice: number;
-  extraLocationPrice: number;
-  videoPrice: number;
-  addonMultiplierStep: number;
-}
-
-

@@ -6,8 +6,8 @@ async function init() {
   try {
     const res = await fetch('/api/studio-config');
     if (res.ok) {
-      const config = await res.json().catch(() => null);
-      (window as any).__STUDIO_CONFIG__ = config || { firebase: null, portalPassword: null };
+      const config = await res.json();
+      (window as any).__STUDIO_CONFIG__ = config;
     } else {
       (window as any).__STUDIO_CONFIG__ = { firebase: null, portalPassword: null };
     }
@@ -15,7 +15,7 @@ async function init() {
     console.warn("Failed to fetch studio-config asynchronously:", e);
     (window as any).__STUDIO_CONFIG__ = { firebase: null, portalPassword: null };
   } finally {
-    const { default: App } = await import('./App');
+    const { default: App } = await import('./App.tsx');
     createRoot(document.getElementById('root')!).render(
       <StrictMode>
         <App />

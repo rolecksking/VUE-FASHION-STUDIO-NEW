@@ -5,7 +5,7 @@ import {
   Settings, Image, FileText, Briefcase, Plus, Save, RotateCcw, CheckCircle, 
   ChevronRight, Inbox, Upload, Database, HelpCircle, Film, Loader2, Play, Edit, Mail
 } from "lucide-react";
-import { Inquiry, CampaignItem, ServiceTier, AssetSpecItem, PartnerLogo, PartnerLogosConfig, PreProductionConfig, PreProductionStep, PricingConfig } from "../types";
+import { Inquiry, CampaignItem, ServiceTier, AssetSpecItem, PartnerLogo, PartnerLogosConfig, PreProductionConfig, PreProductionStep } from "../types";
 import DragDropUpload from "./DragDropUpload";
 import { getInquiries, saveInquiry, deleteInquiryFromFirebase, uploadToFirebaseStorage, uploadWithProgress, getFirebaseConfig, defaultSandboxConfig, auth, getCMSConfig, saveCMSConfig } from "../firebase";
 import { 
@@ -38,10 +38,6 @@ interface PortalInquiriesProps {
   // Pre-Production Config Props
   preProductionConfig?: PreProductionConfig;
   onUpdatePreProduction: (config: PreProductionConfig) => void;
-
-  // Pricing Config Props
-  pricingConfig?: PricingConfig;
-  onUpdatePricingConfig: (config: PricingConfig) => void;
 }
 
 type TabType = "inquiries" | "hero_manifesto" | "portfolio" | "pricing_specs" | "database_setup" | "security" | "partners" | "pre_production" | "smtp_config";
@@ -116,9 +112,7 @@ export default function PortalInquiries({
   partnerLogosConfig,
   onUpdatePartnerLogos,
   preProductionConfig,
-  onUpdatePreProduction,
-  pricingConfig,
-  onUpdatePricingConfig
+  onUpdatePreProduction
 }: PortalInquiriesProps) {
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [passcode, setPasscode] = useState("");
@@ -178,16 +172,6 @@ export default function PortalInquiries({
   const [localManifesto, setLocalManifesto] = useState({ tagline: "", title: "", body: "", signature: "" });
   const [localHero, setLocalHero] = useState<any[]>([]);
   const [localTiers, setLocalTiers] = useState<ServiceTier[]>([]);
-  const [localPricing, setLocalPricing] = useState<PricingConfig>({
-    currency: "USD",
-    currencySymbol: "$",
-    baseProductPrice: 300,
-    productMultiplierStep: 0.1,
-    extraModelPrice: 250,
-    extraLocationPrice: 1000,
-    videoPrice: 500,
-    addonMultiplierStep: 0.1,
-  });
   
   // Custom Firebase Database config state
   const [dbConfig, setDbConfig] = useState({
@@ -342,9 +326,6 @@ export default function PortalInquiries({
       setLocalManifesto({ ...manifesto });
       setLocalHero([...heroImages]);
       setLocalTiers([...servicesTiers]);
-      if (pricingConfig) {
-        setLocalPricing({ ...pricingConfig });
-      }
 
       if (preProductionConfig) {
         setPreProdTitle(preProductionConfig.title || "");
@@ -778,11 +759,6 @@ export default function PortalInquiries({
   const saveServicesAndSpecs = () => {
     onUpdateServicesTiers(localTiers);
     triggerSaveToast("Production menus updated successfully.");
-  };
-
-  const savePricingConfig = () => {
-    onUpdatePricingConfig(localPricing);
-    triggerSaveToast("Dynamic pricing parameters updated successfully.");
   };
 
   const resetAllCMSToDefaults = () => {
@@ -2269,141 +2245,6 @@ export default function PortalInquiries({
                         <Save size={14} />
                         <span>Save Production Tiers Changes</span>
                       </button>
-
-                      {/* Divider */}
-                      <div className="my-8 border-t border-neutral-900/60" />
-
-                      {/* Dynamic Multiplier Pricing Matrix Section */}
-                      <div className="space-y-6">
-                        <div>
-                          <h4 className="font-serif-luxury text-base font-light tracking-wide text-white">
-                            Dynamic Multiplier Pricing Matrix
-                          </h4>
-                          <p className="font-sans text-[11px] text-neutral-400 font-light mt-1">
-                            Fine-tune the baseline investment model, global currency representation, and cumulative multipliers for custom campaigns.
-                          </p>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 bg-neutral-950/60 border border-neutral-900 p-5 rounded-sm">
-                          {/* Currency & Symbol */}
-                          <div className="flex flex-col space-y-1.5">
-                            <label className="text-[9px] tracking-widest uppercase text-neutral-400 font-semibold">
-                              Base Currency ISO Code
-                            </label>
-                            <input
-                              type="text"
-                              value={localPricing.currency}
-                              onChange={(e) => setLocalPricing({ ...localPricing, currency: e.target.value })}
-                              className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2 focus:border-white focus:outline-none font-light"
-                              placeholder="e.g. USD"
-                            />
-                          </div>
-
-                          <div className="flex flex-col space-y-1.5">
-                            <label className="text-[9px] tracking-widest uppercase text-neutral-400 font-semibold">
-                              Currency Symbol
-                            </label>
-                            <input
-                              type="text"
-                              value={localPricing.currencySymbol}
-                              onChange={(e) => setLocalPricing({ ...localPricing, currencySymbol: e.target.value })}
-                              className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2 focus:border-white focus:outline-none font-light"
-                              placeholder="e.g. $"
-                            />
-                          </div>
-
-                          {/* Base Price & Product Increment */}
-                          <div className="flex flex-col space-y-1.5">
-                            <label className="text-[9px] tracking-widest uppercase text-neutral-400 font-semibold">
-                              Base Product Rate ({localPricing.currencySymbol})
-                            </label>
-                            <input
-                              type="number"
-                              value={localPricing.baseProductPrice}
-                              onChange={(e) => setLocalPricing({ ...localPricing, baseProductPrice: parseFloat(e.target.value) || 0 })}
-                              className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2 focus:border-white focus:outline-none font-light font-mono"
-                            />
-                          </div>
-
-                          <div className="flex flex-col space-y-1.5">
-                            <label className="text-[9px] tracking-widest uppercase text-neutral-400 font-semibold">
-                              Product Multiplier Increment (per look)
-                            </label>
-                            <input
-                              type="number"
-                              step="0.01"
-                              value={localPricing.productMultiplierStep}
-                              onChange={(e) => setLocalPricing({ ...localPricing, productMultiplierStep: parseFloat(e.target.value) || 0 })}
-                              className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2 focus:border-white focus:outline-none font-light font-mono"
-                            />
-                            <span className="text-[9px] text-neutral-500 font-mono">
-                              e.g. 0.10 means a +10% rate increase for each additional product look.
-                            </span>
-                          </div>
-
-                          {/* Addon Prices */}
-                          <div className="flex flex-col space-y-1.5">
-                            <label className="text-[9px] tracking-widest uppercase text-neutral-400 font-semibold">
-                              Extra Model Base Rate ({localPricing.currencySymbol})
-                            </label>
-                            <input
-                              type="number"
-                              value={localPricing.extraModelPrice}
-                              onChange={(e) => setLocalPricing({ ...localPricing, extraModelPrice: parseFloat(e.target.value) || 0 })}
-                              className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2 focus:border-white focus:outline-none font-light font-mono"
-                            />
-                          </div>
-
-                          <div className="flex flex-col space-y-1.5">
-                            <label className="text-[9px] tracking-widest uppercase text-neutral-400 font-semibold">
-                              Extra Location Base Rate ({localPricing.currencySymbol})
-                            </label>
-                            <input
-                              type="number"
-                              value={localPricing.extraLocationPrice}
-                              onChange={(e) => setLocalPricing({ ...localPricing, extraLocationPrice: parseFloat(e.target.value) || 0 })}
-                              className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2 focus:border-white focus:outline-none font-light font-mono"
-                            />
-                          </div>
-
-                          <div className="flex flex-col space-y-1.5">
-                            <label className="text-[9px] tracking-widest uppercase text-neutral-400 font-semibold">
-                              Short-form Video Base Rate ({localPricing.currencySymbol})
-                            </label>
-                            <input
-                              type="number"
-                              value={localPricing.videoPrice}
-                              onChange={(e) => setLocalPricing({ ...localPricing, videoPrice: parseFloat(e.target.value) || 0 })}
-                              className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2 focus:border-white focus:outline-none font-light font-mono"
-                            />
-                          </div>
-
-                          <div className="flex flex-col space-y-1.5">
-                            <label className="text-[9px] tracking-widest uppercase text-neutral-400 font-semibold">
-                              Addon Multiplier Increment (per addon)
-                            </label>
-                            <input
-                              type="number"
-                              step="0.01"
-                              value={localPricing.addonMultiplierStep}
-                              onChange={(e) => setLocalPricing({ ...localPricing, addonMultiplierStep: parseFloat(e.target.value) || 0 })}
-                              className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2 focus:border-white focus:outline-none font-light font-mono"
-                            />
-                            <span className="text-[9px] text-neutral-500 font-mono">
-                              e.g. 0.10 means a +10% rate increase for each additional addon.
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Save Button for dynamic pricing matrix */}
-                        <button
-                          onClick={savePricingConfig}
-                          className="w-full bg-white/10 hover:bg-white/20 text-white border border-neutral-800 font-sans-luxury text-[10px] tracking-widest uppercase font-semibold py-4.5 transition-colors flex items-center justify-center space-x-2 cursor-pointer"
-                        >
-                          <Save size={14} />
-                          <span>Save Pricing Parameters</span>
-                        </button>
-                      </div>
 
                     </div>
                   )}

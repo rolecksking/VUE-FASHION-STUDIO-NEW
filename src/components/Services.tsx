@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ServiceTier, PricingConfig } from "../types";
+import { ServiceTier } from "../types";
 import DragDropUpload from "./DragDropUpload";
 import { Clock, Check, Sparkles, Film, Image as ImageIcon, MapPin, Users, Upload, Trash2, Plus, ChevronDown, ChevronUp, AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
 import { saveInquiry, uploadCampaignAsset } from "../firebase";
@@ -142,26 +142,13 @@ const createDefaultProduct = (name: string, description: string = "", images: st
   videoInstructions: ""
 });
 
-const FALLBACK_PRICING: PricingConfig = {
-  currency: "USD",
-  currencySymbol: "$",
-  baseProductPrice: 300,
-  productMultiplierStep: 0.1,
-  extraModelPrice: 250,
-  extraLocationPrice: 1000,
-  videoPrice: 500,
-  addonMultiplierStep: 0.1,
-};
-
 interface ServicesProps {
   tiers?: ServiceTier[];
   onRequestTier?: (scopeName: string) => void;
-  pricingConfig?: PricingConfig;
 }
 
-export default function Services({ tiers, onRequestTier, pricingConfig }: ServicesProps) {
+export default function Services({ tiers, onRequestTier }: ServicesProps) {
   const activeTiers = tiers && tiers.length > 0 ? tiers : DEFAULT_SERVICE_TIERS;
-  const activePricing = pricingConfig || FALLBACK_PRICING;
 
   // Campaign request submission states
   const [clientEmail, setClientEmail] = useState("");
@@ -485,52 +472,24 @@ export default function Services({ tiers, onRequestTier, pricingConfig }: Servic
     tierIndex = activeTiers.length - 1;
   }
 
-  // New Pricing Engine: Base configurable product price, multiplier increases as the client adds more products.
-  // The extra add-ons (Extra model, extra location, video) also come at a fixed price and multiplier increases as the client adds more add-ons.
-  
-  // Calculate total extra models, locations, and videos across all product requests
-  const totalExtraModels = productRequests.reduce((sum, prod) => {
-    return sum + (prod.isBespokeModel && prod.modelsList.length > 1 ? prod.modelsList.length - 1 : 0);
-  }, 0);
-
-  const totalExtraLocations = productRequests.reduce((sum, prod) => {
-    return sum + (prod.productionScope === "multi" ? Math.max(1, prod.multiLocations.length - 1) : 0);
-  }, 0);
-
-  const totalVideos = productRequests.reduce((sum, prod) => {
-    return sum + (prod.videoCount !== undefined ? prod.videoCount : (prod.videoRequired ? 1 : 0));
-  }, 0);
-
-  const totalAddonsCount = totalExtraModels + totalExtraLocations + totalVideos;
-
-  // Product count multiplier: starts at 1.0, increases by step for each additional look
-  const productMultiplier = looksCount <= 1 
-    ? 1.0 
-    : 1.0 + (looksCount - 1) * activePricing.productMultiplierStep;
-
-  // Addon count multiplier: starts at 1.0, increases by step for each additional addon
-  const addonMultiplier = totalAddonsCount <= 1 
-    ? 1.0 
-    : 1.0 + (totalAddonsCount - 1) * activePricing.addonMultiplierStep;
-
-  const basePricePerProduct = activePricing.baseProductPrice * productMultiplier;
-
-  // Calculate dynamic production details
+  // Calculate high-fashion production math with per-product custom settings
   const calculatedDetails = productRequests.map(prod => {
-    const basePriceNum = basePricePerProduct;
+    // Determine base rate per product look based on total count
+    let basePriceNum = 2000;
+    if (looksCount >= 4 && looksCount <= 8) {
+      basePriceNum = 1750;
+    } else if (looksCount >= 9) {
+      basePriceNum = 1500;
+    }
 
-    const extraModelsInProduct = prod.isBespokeModel && prod.modelsList.length > 1 
-      ? prod.modelsList.length - 1 
+    const modelAddon = prod.isBespokeModel && prod.modelsList.length > 1
+      ? 250 * (prod.modelsList.length - 1)
       : 0;
-    const modelAddon = extraModelsInProduct * activePricing.extraModelPrice * addonMultiplier;
 
-    const extraLocationsInProduct = prod.productionScope === "multi" 
-      ? Math.max(1, prod.multiLocations.length - 1) 
-      : 0;
-    const scopeAddon = extraLocationsInProduct * activePricing.extraLocationPrice * addonMultiplier;
+    const scopeAddon = prod.productionScope === "multi" ? 3500 : 0;
     
     const effectiveVideoCount = prod.videoCount !== undefined ? prod.videoCount : (prod.videoRequired ? 1 : 0);
-    const videoAddon = effectiveVideoCount * activePricing.videoPrice * addonMultiplier;
+    const videoAddon = effectiveVideoCount * 2500;
 
     const total = basePriceNum + modelAddon + scopeAddon + videoAddon;
 
@@ -546,8 +505,8 @@ export default function Services({ tiers, onRequestTier, pricingConfig }: Servic
 
   const grandTotal = calculatedDetails.reduce((sum, item) => sum + item.total, 0);
 
-  // Format final price string using active currency symbol
-  const formattedInvestment = `${activePricing.currencySymbol}${grandTotal.toLocaleString()}`;
+  // Format final price string
+  const formattedInvestment = `$${grandTotal.toLocaleString()}`;
 
   // Calculated timeline estimate
   let daysMin = 5;
