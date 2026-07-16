@@ -1,30 +1,27 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import App from './App';
 import './index.css';
 
-// Fetch the studio configuration asynchronously in the background as early as possible
-fetch('/api/studio-config')
-  .then(res => {
+async function init() {
+  try {
+    const res = await fetch('/api/studio-config');
     if (res.ok) {
-      return res.json().catch(() => null);
-    }
-    return null;
-  })
-  .then(config => {
-    if (config) {
-      (window as any).__STUDIO_CONFIG__ = config;
+      const config = await res.json().catch(() => null);
+      (window as any).__STUDIO_CONFIG__ = config || { firebase: null, portalPassword: null };
     } else {
       (window as any).__STUDIO_CONFIG__ = { firebase: null, portalPassword: null };
     }
-  })
-  .catch(e => {
+  } catch (e) {
     console.warn("Failed to fetch studio-config asynchronously:", e);
     (window as any).__STUDIO_CONFIG__ = { firebase: null, portalPassword: null };
-  });
+  } finally {
+    const { default: App } = await import('./App');
+    createRoot(document.getElementById('root')!).render(
+      <StrictMode>
+        <App />
+      </StrictMode>,
+    );
+  }
+}
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-);
+init();

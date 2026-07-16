@@ -53,95 +53,32 @@ export function getFirebaseConfig() {
   return defaultSandboxConfig;
 }
 
-let appInstance: any = null;
-let dbInstance: any = null;
-let storageInstance: any = null;
-let authInstance: any = null;
+export const firebaseConfig = getFirebaseConfig();
 
-export function getFirebaseApp() {
-  if (!appInstance) {
-    const config = getFirebaseConfig();
-    appInstance = getApps().length === 0 ? initializeApp(config) : getApp();
-  }
-  return appInstance;
-}
+// Initialize Firebase App
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
-export function getDbInstance() {
-  if (!dbInstance) {
-    const app = getFirebaseApp();
-    const config = getFirebaseConfig();
-    const dbId = config.databaseId || (config.projectId === "magnificent-technique-c3bk6"
-      ? "ai-studio-vuefashionstudio-56f91c08-f344-42f3-87a4-556a733d1ca7"
-      : "(default)");
-    dbInstance = dbId === "(default)"
-      ? initializeFirestore(app, {})
-      : initializeFirestore(app, {}, dbId);
+// Determine Database ID: 
+// Sandbox uses: "ai-studio-vuefashionstudio-56f91c08-f344-42f3-87a4-556a733d1ca7"
+// Custom/Production projects use the default database "(default)"
+const getDatabaseId = () => {
+  if (firebaseConfig.databaseId) return firebaseConfig.databaseId;
+  if (firebaseConfig.projectId === "magnificent-technique-c3bk6") {
+    return "ai-studio-vuefashionstudio-56f91c08-f344-42f3-87a4-556a733d1ca7";
   }
-  return dbInstance;
-}
+  return "(default)";
+};
 
-export function getStorageInstance() {
-  if (!storageInstance) {
-    storageInstance = getStorage(getFirebaseApp());
-  }
-  return storageInstance;
-}
+export const dbId = getDatabaseId();
 
-export function getAuthInstance() {
-  if (!authInstance) {
-    authInstance = getAuth(getFirebaseApp());
-  }
-  return authInstance;
-}
+// Initialize Firestore with appropriate databaseId
+export const db = dbId === "(default)"
+  ? initializeFirestore(app, {})
+  : initializeFirestore(app, {}, dbId);
 
-// Export Proxies so they behave exactly like the real objects, but are initialized lazily upon first property access!
-export const db = new Proxy({}, {
-  get: (target: any, prop: string | symbol) => {
-    if (prop === 'then') return undefined; // Prevent promise-like resolution issues
-    const instance = getDbInstance();
-    const value = instance[prop];
-    if (typeof value === 'function') {
-      return value.bind(instance);
-    }
-    return value;
-  },
-  set: (target: any, prop: string | symbol, value: any) => {
-    getDbInstance()[prop] = value;
-    return true;
-  }
-}) as any;
-
-export const storage = new Proxy({}, {
-  get: (target: any, prop: string | symbol) => {
-    if (prop === 'then') return undefined;
-    const instance = getStorageInstance();
-    const value = instance[prop];
-    if (typeof value === 'function') {
-      return value.bind(instance);
-    }
-    return value;
-  },
-  set: (target: any, prop: string | symbol, value: any) => {
-    getStorageInstance()[prop] = value;
-    return true;
-  }
-}) as any;
-
-export const auth = new Proxy({}, {
-  get: (target: any, prop: string | symbol) => {
-    if (prop === 'then') return undefined;
-    const instance = getAuthInstance();
-    const value = instance[prop];
-    if (typeof value === 'function') {
-      return value.bind(instance);
-    }
-    return value;
-  },
-  set: (target: any, prop: string | symbol, value: any) => {
-    getAuthInstance()[prop] = value;
-    return true;
-  }
-}) as any;
+// Initialize Storage and Auth
+export const storage = getStorage(app);
+export const auth = getAuth(app);
 
 export enum OperationType {
   CREATE = 'create',
