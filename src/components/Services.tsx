@@ -19,7 +19,11 @@ const DEFAULT_SERVICE_TIERS: ServiceTier[] = [
     ],
     timeline: "5-7 Business Days",
     idealFor: "Boutique fashion labels, emerging accessory brands, and singular lookbook launches.",
-    priceEstimate: "From $4,500"
+    priceEstimate: "From $4,500",
+    baseRate: 2000,
+    modelAddonRate: 250,
+    scopeAddonRate: 3500,
+    videoAddonRate: 2500
   },
   {
     id: "tier-2",
@@ -36,7 +40,11 @@ const DEFAULT_SERVICE_TIERS: ServiceTier[] = [
     ],
     timeline: "10-14 Business Days",
     idealFor: "Global flagship collections, premium footwear releases, and digital advertising campaigns.",
-    priceEstimate: "From $12,000"
+    priceEstimate: "From $12,000",
+    baseRate: 1750,
+    modelAddonRate: 250,
+    scopeAddonRate: 3500,
+    videoAddonRate: 2500
   },
   {
     id: "tier-3",
@@ -53,7 +61,11 @@ const DEFAULT_SERVICE_TIERS: ServiceTier[] = [
     ],
     timeline: "21 - 30 Production Days",
     idealFor: "Luxury houses seeking immersive runway launches, high-end campaign assets, or virtual showrooms.",
-    priceEstimate: "Upon Request"
+    priceEstimate: "Upon Request",
+    baseRate: 1500,
+    modelAddonRate: 250,
+    scopeAddonRate: 3500,
+    videoAddonRate: 2500
   }
 ];
 
@@ -472,24 +484,36 @@ export default function Services({ tiers, onRequestTier }: ServicesProps) {
     tierIndex = activeTiers.length - 1;
   }
 
+  // Safely resolve dynamic rate parameters with bulletproof default fallbacks to prevent NaN errors
+  const baseRate = activeTier && typeof activeTier.baseRate === "number" 
+    ? activeTier.baseRate 
+    : (tierIndex === 0 ? 2000 : tierIndex === 1 ? 1750 : 1500);
+
+  const modelAddonRate = activeTier && typeof activeTier.modelAddonRate === "number" 
+    ? activeTier.modelAddonRate 
+    : 250;
+
+  const scopeAddonRate = activeTier && typeof activeTier.scopeAddonRate === "number" 
+    ? activeTier.scopeAddonRate 
+    : 3500;
+
+  const videoAddonRate = activeTier && typeof activeTier.videoAddonRate === "number" 
+    ? activeTier.videoAddonRate 
+    : 2500;
+
   // Calculate high-fashion production math with per-product custom settings
   const calculatedDetails = productRequests.map(prod => {
-    // Determine base rate per product look based on total count
-    let basePriceNum = 2000;
-    if (looksCount >= 4 && looksCount <= 8) {
-      basePriceNum = 1750;
-    } else if (looksCount >= 9) {
-      basePriceNum = 1500;
-    }
+    // Determine base rate per product look based on active tier rates
+    const basePriceNum = baseRate;
 
     const modelAddon = prod.isBespokeModel && prod.modelsList.length > 1
-      ? 250 * (prod.modelsList.length - 1)
+      ? modelAddonRate * (prod.modelsList.length - 1)
       : 0;
 
-    const scopeAddon = prod.productionScope === "multi" ? 3500 : 0;
+    const scopeAddon = prod.productionScope === "multi" ? scopeAddonRate : 0;
     
     const effectiveVideoCount = prod.videoCount !== undefined ? prod.videoCount : (prod.videoRequired ? 1 : 0);
-    const videoAddon = effectiveVideoCount * 2500;
+    const videoAddon = effectiveVideoCount * videoAddonRate;
 
     const total = basePriceNum + modelAddon + scopeAddon + videoAddon;
 

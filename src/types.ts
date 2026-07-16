@@ -23,6 +23,10 @@ export interface ServiceTier {
   timeline: string;
   idealFor: string;
   priceEstimate?: string;
+  baseRate?: number;
+  modelAddonRate?: number;
+  scopeAddonRate?: number;
+  videoAddonRate?: number;
 }
 
 export interface Inquiry {

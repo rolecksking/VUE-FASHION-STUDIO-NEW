@@ -2232,6 +2232,71 @@ export default function PortalInquiries({
                                   className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2 focus:border-white focus:outline-none font-light"
                                 />
                               </div>
+
+                              {/* Dynamic Pricing Engine Rates */}
+                              <div className="flex flex-col space-y-1.5">
+                                <label className="text-[9px] tracking-widest uppercase text-neutral-400">Base Price per Look ($)</label>
+                                <input
+                                  type="number"
+                                  value={tier.baseRate !== undefined ? tier.baseRate : ""}
+                                  placeholder={tIdx === 0 ? "2000" : tIdx === 1 ? "1750" : "1500"}
+                                  onChange={(e) => {
+                                    const next = [...localTiers];
+                                    const val = e.target.value === "" ? undefined : parseInt(e.target.value, 10);
+                                    next[tIdx].baseRate = isNaN(val as any) ? undefined : val;
+                                    setLocalTiers(next);
+                                  }}
+                                  className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2 focus:border-white focus:outline-none font-light font-mono"
+                                />
+                              </div>
+
+                              <div className="flex flex-col space-y-1.5">
+                                <label className="text-[9px] tracking-widest uppercase text-neutral-400">Model Addon Fee ($)</label>
+                                <input
+                                  type="number"
+                                  value={tier.modelAddonRate !== undefined ? tier.modelAddonRate : ""}
+                                  placeholder="250"
+                                  onChange={(e) => {
+                                    const next = [...localTiers];
+                                    const val = e.target.value === "" ? undefined : parseInt(e.target.value, 10);
+                                    next[tIdx].modelAddonRate = isNaN(val as any) ? undefined : val;
+                                    setLocalTiers(next);
+                                  }}
+                                  className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2 focus:border-white focus:outline-none font-light font-mono"
+                                />
+                              </div>
+
+                              <div className="flex flex-col space-y-1.5">
+                                <label className="text-[9px] tracking-widest uppercase text-neutral-400">Multi-Location Fee ($)</label>
+                                <input
+                                  type="number"
+                                  value={tier.scopeAddonRate !== undefined ? tier.scopeAddonRate : ""}
+                                  placeholder="3500"
+                                  onChange={(e) => {
+                                    const next = [...localTiers];
+                                    const val = e.target.value === "" ? undefined : parseInt(e.target.value, 10);
+                                    next[tIdx].scopeAddonRate = isNaN(val as any) ? undefined : val;
+                                    setLocalTiers(next);
+                                  }}
+                                  className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2 focus:border-white focus:outline-none font-light font-mono"
+                                />
+                              </div>
+
+                              <div className="flex flex-col space-y-1.5">
+                                <label className="text-[9px] tracking-widest uppercase text-neutral-400">Video Addon Fee ($)</label>
+                                <input
+                                  type="number"
+                                  value={tier.videoAddonRate !== undefined ? tier.videoAddonRate : ""}
+                                  placeholder="2500"
+                                  onChange={(e) => {
+                                    const next = [...localTiers];
+                                    const val = e.target.value === "" ? undefined : parseInt(e.target.value, 10);
+                                    next[tIdx].videoAddonRate = isNaN(val as any) ? undefined : val;
+                                    setLocalTiers(next);
+                                  }}
+                                  className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2 focus:border-white focus:outline-none font-light font-mono"
+                                />
+                              </div>
                             </div>
                           </div>
                         ))}
