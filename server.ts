@@ -482,7 +482,7 @@ async function startServer() {
   });
 
   // Vite middleware for development (with robust production fallback)
-  const isProd = process.env.NODE_ENV === "production" || (fs.existsSync(path.join(process.cwd(), "dist")) && process.env.NODE_ENV !== "development");
+  const isProd = process.env.NODE_ENV === "production";
 
   if (!isProd) {
     const vite = await createViteServer({
