@@ -5,8 +5,6 @@ import { Menu, X, Globe } from "lucide-react";
 interface HeaderProps {
   lang?: string;
   setLang?: (lang: string) => void;
-  currency?: "USD" | "NGN";
-  setCurrency?: (currency: "USD" | "NGN") => void;
 }
 
 const TRANSLATIONS = {
@@ -32,7 +30,7 @@ const TRANSLATIONS = {
 
 type LangType = "EN" | "FR" | "IT";
 
-export default function Header({ lang = "EN", setLang, currency = "USD", setCurrency }: HeaderProps) {
+export default function Header({ lang = "EN", setLang }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -113,7 +111,7 @@ export default function Header({ lang = "EN", setLang, currency = "USD", setCurr
           </nav>
 
           {/* Right Side: Language Selector & Mobile Toggle (Symmetrically balanced) */}
-          <div className="flex items-center justify-end space-x-5 min-w-[220px]">
+          <div className="flex items-center justify-end space-x-6 min-w-[180px]">
             {/* Desktop Language Selector */}
             <div className="hidden sm:flex items-center space-x-2 font-mono text-[9px] tracking-widest uppercase text-neutral-500">
               <Globe size={11} className="text-neutral-600 mr-1" />
@@ -142,27 +140,6 @@ export default function Header({ lang = "EN", setLang, currency = "USD", setCurr
                 }`}
               >
                 IT
-              </button>
-            </div>
-
-            {/* Desktop Currency Selector */}
-            <div className="hidden sm:flex items-center space-x-2 font-mono text-[9px] tracking-widest uppercase text-neutral-500 border-l border-neutral-800 pl-4">
-              <button
-                onClick={() => setCurrency && setCurrency("USD")}
-                className={`transition-colors duration-300 cursor-pointer ${
-                  currency === "USD" ? "text-white font-semibold" : "hover:text-white"
-                }`}
-              >
-                USD ($)
-              </button>
-              <span className="text-neutral-800">/</span>
-              <button
-                onClick={() => setCurrency && setCurrency("NGN")}
-                className={`transition-colors duration-300 cursor-pointer ${
-                  currency === "NGN" ? "text-white font-semibold" : "hover:text-white"
-                }`}
-              >
-                NGN (₦)
               </button>
             </div>
 
@@ -260,36 +237,6 @@ export default function Header({ lang = "EN", setLang, currency = "USD", setCurr
                     }`}
                   >
                     Italiano
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex flex-col items-center space-y-2 w-full pt-4 border-t border-neutral-950">
-                <span className="font-sans-luxury text-[8px] tracking-[0.3em] uppercase text-neutral-500">
-                  Select Currency / Choisir la devise
-                </span>
-                <div className="flex items-center space-x-6 font-mono text-xs tracking-[0.2em] uppercase text-neutral-400">
-                  <button
-                    onClick={() => {
-                      setCurrency && setCurrency("USD");
-                      setMobileMenuOpen(false);
-                    }}
-                    className={`transition-colors py-1 px-3 ${
-                      currency === "USD" ? "text-white border-b border-white" : "hover:text-white"
-                    }`}
-                  >
-                    USD ($)
-                  </button>
-                  <button
-                    onClick={() => {
-                      setCurrency && setCurrency("NGN");
-                      setMobileMenuOpen(false);
-                    }}
-                    className={`transition-colors py-1 px-3 ${
-                      currency === "NGN" ? "text-white border-b border-white" : "hover:text-white"
-                    }`}
-                  >
-                    NGN (₦)
                   </button>
                 </div>
               </div>

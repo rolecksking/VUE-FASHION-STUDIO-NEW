@@ -42,6 +42,8 @@ interface PortalInquiriesProps {
   // Pricing Rates CMS Props
   pricingRates: PricingRates;
   onUpdatePricingRates: (rates: PricingRates) => void;
+  currency?: "USD" | "NGN";
+  onUpdateCurrency?: (currency: "USD" | "NGN") => void;
 }
 
 type TabType = "inquiries" | "hero_manifesto" | "portfolio" | "pricing_specs" | "database_setup" | "security" | "partners" | "pre_production" | "smtp_config";
@@ -118,7 +120,9 @@ export default function PortalInquiries({
   preProductionConfig,
   onUpdatePreProduction,
   pricingRates,
-  onUpdatePricingRates
+  onUpdatePricingRates,
+  currency = "USD",
+  onUpdateCurrency
 }: PortalInquiriesProps) {
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [passcode, setPasscode] = useState("");
@@ -2092,6 +2096,52 @@ export default function PortalInquiries({
                   {activeTab === "pricing_specs" && (
                     <div className="space-y-10 font-sans-luxury text-neutral-300">
                       
+                      {/* Global Website Currency Configuration Card */}
+                      <div className="space-y-6 border border-neutral-900 p-5 bg-neutral-950/40 rounded-sm">
+                        <div className="border-b border-neutral-900 pb-3">
+                          <h4 className="font-serif-luxury text-base text-white font-light uppercase tracking-wider">
+                            Global Website Currency
+                          </h4>
+                          <p className="text-[10px] text-neutral-500 uppercase tracking-widest mt-1">
+                            Control the currency used across the entire website for all visitors. Perfect for targeting local vs. international fashion markets.
+                          </p>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                          <div className="space-y-1">
+                            <span className="font-mono text-[9px] text-neutral-400 uppercase tracking-widest block">Active Market Strategy</span>
+                            <p className="text-xs text-neutral-400 font-light leading-relaxed">
+                              Currently displaying all prices in <strong className="text-white">{currency === "USD" ? "United States Dollars ($)" : "Nigerian Naira (₦)"}</strong>.
+                            </p>
+                          </div>
+
+                          <div className="flex items-center space-x-3 bg-neutral-900 p-1 border border-neutral-800 rounded-sm">
+                            <button
+                              type="button"
+                              onClick={() => onUpdateCurrency && onUpdateCurrency("USD")}
+                              className={`px-4 py-2 font-mono text-[10px] uppercase tracking-widest transition-all cursor-pointer rounded-sm ${
+                                currency === "USD"
+                                  ? "bg-white text-black font-bold"
+                                  : "text-neutral-400 hover:text-white"
+                              }`}
+                            >
+                              International (USD $)
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => onUpdateCurrency && onUpdateCurrency("NGN")}
+                              className={`px-4 py-2 font-mono text-[10px] uppercase tracking-widest transition-all cursor-pointer rounded-sm ${
+                                currency === "NGN"
+                                  ? "bg-white text-black font-bold"
+                                  : "text-neutral-400 hover:text-white"
+                              }`}
+                            >
+                              Nigeria (NGN ₦)
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
                       {/* Flat Pricing & Fixed Add-on Config */}
                       <div className="space-y-6 border border-neutral-900 p-5 bg-neutral-950/40 rounded-sm">
                         <div className="border-b border-neutral-900 pb-3">

@@ -259,9 +259,10 @@ export default function App() {
     return (saved === "NGN" || saved === "USD") ? saved : "USD";
   });
 
-  const handleSetCurrency = (newCurrency: "USD" | "NGN") => {
+  const handleSetCurrency = async (newCurrency: "USD" | "NGN") => {
     setCurrency(newCurrency);
     localStorage.setItem("vfs_currency", newCurrency);
+    await saveCMSConfig("settings", { currency: newCurrency });
   };
 
   const updateInquiryCount = async () => {
@@ -302,7 +303,8 @@ export default function App() {
           firestoreServices,
           firestoreLogos,
           firestorePreProd,
-          firestorePricingRates
+          firestorePricingRates,
+          firestoreSettings
         ] = await Promise.all([
           getCMSConfig("hero"),
           getCMSConfig("manifesto"),
@@ -310,7 +312,8 @@ export default function App() {
           getCMSConfig("services"),
           getCMSConfig("partner_logos"),
           getCMSConfig("preproduction"),
-          getCMSConfig("pricing_rates")
+          getCMSConfig("pricing_rates"),
+          getCMSConfig("settings")
         ]);
 
         if (firestoreHero) {
@@ -340,6 +343,10 @@ export default function App() {
         if (firestorePricingRates) {
           setPricingRates(firestorePricingRates);
           localStorage.setItem("vfs_cms_pricing_rates", JSON.stringify(firestorePricingRates));
+        }
+        if (firestoreSettings && (firestoreSettings.currency === "USD" || firestoreSettings.currency === "NGN")) {
+          setCurrency(firestoreSettings.currency);
+          localStorage.setItem("vfs_currency", firestoreSettings.currency);
         }
       } catch (err) {
         console.error("Failed to fetch initial cloud configurations:", err);
@@ -451,8 +458,8 @@ export default function App() {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="bg-black text-white relative min-h-screen selection:bg-white selection:text-black antialiased font-sans"
         >
-          {/* Absolute Quiet Luxury Header with Language Selector, Currency Selector & Mobile Hamburger */}
-          <Header lang={lang} setLang={setLang} currency={currency} setCurrency={handleSetCurrency} />
+          {/* Absolute Quiet Luxury Header with Language Selector & Mobile Hamburger */}
+          <Header lang={lang} setLang={setLang} />
 
           {/* Main Single Page Sections */}
           <main>
@@ -476,6 +483,7 @@ export default function App() {
               onInquirySubmitted={updateInquiryCount} 
               tiers={servicesTiers}
               selectedScope={selectedScope}
+              currency={currency}
             />
           </main>
 
@@ -509,6 +517,8 @@ export default function App() {
             // Pricing Rates CMS Props
             pricingRates={pricingRates}
             onUpdatePricingRates={handleUpdatePricingRates}
+            currency={currency}
+            onUpdateCurrency={handleSetCurrency}
           />
         </motion.div>
       )}
