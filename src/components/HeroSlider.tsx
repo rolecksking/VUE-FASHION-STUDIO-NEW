@@ -98,7 +98,7 @@ export default function HeroSlider({ images, manifesto }: HeroSliderProps) {
         <span className="font-sans-luxury text-[8px] tracking-[0.4em] uppercase text-neutral-400 block mb-2 font-bold">
           {activeTagline}
         </span>
-        <h2 className="font-serif-luxury text-base sm:text-lg md:text-xl font-light tracking-wide text-white mb-2 leading-tight uppercase">
+        <h2 className="font-display-luxury text-base sm:text-lg md:text-xl font-light tracking-wide text-white mb-2 leading-tight uppercase">
           {activeTitle}
         </h2>
         <div className="w-10 h-[1px] bg-neutral-600/60 my-2.5" />
@@ -106,7 +106,7 @@ export default function HeroSlider({ images, manifesto }: HeroSliderProps) {
           {activeBody}
         </p>
         {activeSignature && (
-          <span className="font-serif-luxury italic text-[9px] text-neutral-500 mt-3 block">
+          <span className="font-display-luxury italic text-[9px] text-neutral-500 mt-3 block">
             {activeSignature}
           </span>
         )}

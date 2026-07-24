@@ -71,10 +71,10 @@ export default function Header({ lang = "EN", setLang, theme = "light", setTheme
               id="logo"
               className="flex items-center space-x-3 group"
             >
-              <span className="font-serif-luxury text-xl font-light tracking-widest text-white border border-white/30 px-2 py-0.5 group-hover:border-white transition-colors duration-300">
+              <span className="font-display-luxury text-xl font-light tracking-widest text-white border border-white/30 px-2 py-0.5 group-hover:border-white transition-colors duration-300">
                 VF
               </span>
-              <span className="font-serif-luxury text-xs sm:text-sm tracking-[0.25em] font-light text-white uppercase block pt-0.5 group-hover:opacity-80 transition-opacity">
+              <span className="font-display-luxury text-xs sm:text-sm tracking-[0.25em] font-light text-white uppercase block pt-0.5 group-hover:opacity-80 transition-opacity">
                 VUE FASHION STUDIO
               </span>
             </a>
@@ -183,28 +183,28 @@ export default function Header({ lang = "EN", setLang, theme = "light", setTheme
               <a
                 href="#services"
                 onClick={() => setMobileMenuOpen(false)}
-                className="font-serif-luxury text-xl tracking-[0.2em] uppercase font-light text-neutral-400 hover:text-white transition-colors"
+                className="font-sans-luxury text-sm tracking-[0.25em] uppercase font-medium text-neutral-300 hover:text-white transition-colors"
               >
                 {t.services}
               </a>
               <a
                 href="#specifications"
                 onClick={() => setMobileMenuOpen(false)}
-                className="font-serif-luxury text-xl tracking-[0.2em] uppercase font-light text-neutral-400 hover:text-white transition-colors"
+                className="font-sans-luxury text-sm tracking-[0.25em] uppercase font-medium text-neutral-300 hover:text-white transition-colors"
               >
                 {t.specifications}
               </a>
               <a
                 href="#portfolio"
                 onClick={() => setMobileMenuOpen(false)}
-                className="font-serif-luxury text-xl tracking-[0.2em] uppercase font-light text-neutral-400 hover:text-white transition-colors"
+                className="font-sans-luxury text-sm tracking-[0.25em] uppercase font-medium text-neutral-300 hover:text-white transition-colors"
               >
                 {t.campaigns}
               </a>
               <a
                 href="#inquire"
                 onClick={() => setMobileMenuOpen(false)}
-                className="font-serif-luxury text-xl tracking-[0.2em] uppercase font-light text-neutral-400 hover:text-white transition-colors"
+                className="font-sans-luxury text-sm tracking-[0.25em] uppercase font-medium text-neutral-300 hover:text-white transition-colors"
               >
                 {t.inquire}
               </a>
