@@ -177,21 +177,40 @@ export function handleFirestoreError(error: any, operationType: OperationType, p
   throw new Error(JSON.stringify(errInfo));
 }
 
-// Helper to save a single CMS config document to Firestore
-export async function saveCMSConfig(docId: string, data: any) {
-  if (!db) {
-    console.warn("[Firebase] db is not initialized. Skipping saveCMSConfig.");
-    return false;
-  }
-  const path = `cms_config/${docId}`;
+// Helper to save a single CMS config document to Firestore and server fallback
+export async function saveCMSConfig(docId: string, data: any): Promise<boolean> {
+  let firestoreSuccess = false;
+  let serverSuccess = false;
+
+  // 1. Save to server fallback persistently (always works if server is online)
   try {
-    const docRef = doc(db, "cms_config", docId);
-    await setDoc(docRef, { data, updatedAt: new Date().toISOString() });
-    return true;
-  } catch (error) {
-    handleFirestoreError(error, OperationType.WRITE, path);
-    return false;
+    const response = await fetch("/api/save-cms-config", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ docId, data })
+    });
+    if (response.ok) {
+      serverSuccess = true;
+    }
+  } catch (err) {
+    console.error(`[Firebase] Failed to save CMS config "${docId}" to server fallback:`, err);
   }
+
+  // 2. Save to Firestore database if initialized
+  if (db) {
+    const path = `cms_config/${docId}`;
+    try {
+      const docRef = doc(db, "cms_config", docId);
+      await setDoc(docRef, { data, updatedAt: new Date().toISOString() });
+      firestoreSuccess = true;
+    } catch (error: any) {
+      console.warn(`[Firebase] Failed to write CMS config "${docId}" to Firestore database:`, error?.message || error);
+    }
+  } else {
+    console.warn(`[Firebase] db is not initialized. Skipped Firestore write for "${docId}".`);
+  }
+
+  return serverSuccess || firestoreSuccess;
 }
 
 // Helper to fetch a single CMS config document from Firestore

@@ -212,11 +212,15 @@ export default function App() {
 
   // Load state or use high-fidelity vibrant full-color defaults
   const [heroImages, setHeroImages] = useState<Array<{ url: string; title: string; alt: string }>>(() => {
+    const serverCMS = (window as any).__STUDIO_CONFIG__?.cms;
+    if (serverCMS && serverCMS.hero) return serverCMS.hero;
     const raw = localStorage.getItem("vfs_cms_hero");
     return raw ? JSON.parse(raw) : INITIAL_HERO;
   });
 
   const [manifesto, setManifesto] = useState(() => {
+    const serverCMS = (window as any).__STUDIO_CONFIG__?.cms;
+    if (serverCMS && serverCMS.manifesto) return serverCMS.manifesto;
     const raw = localStorage.getItem("vfs_cms_manifesto_v2");
     return raw ? JSON.parse(raw) : INITIAL_MANIFESTO;
   });
@@ -245,31 +249,46 @@ export default function App() {
   };
 
   const [portfolioItems, setPortfolioItems] = useState<CampaignItem[]>(() => {
+    const serverCMS = (window as any).__STUDIO_CONFIG__?.cms;
+    if (serverCMS && serverCMS.portfolio) return serverCMS.portfolio;
     const raw = localStorage.getItem("vfs_cms_portfolio");
     return raw ? JSON.parse(raw) : INITIAL_PORTFOLIO;
   });
 
   const [servicesTiers, setServicesTiers] = useState<ServiceTier[]>(() => {
+    const serverCMS = (window as any).__STUDIO_CONFIG__?.cms;
+    if (serverCMS && serverCMS.services) return serverCMS.services;
     const raw = localStorage.getItem("vfs_cms_services_v2");
     return raw ? JSON.parse(raw) : INITIAL_SERVICES;
   });
 
   const [partnerLogosConfig, setPartnerLogosConfig] = useState<PartnerLogosConfig>(() => {
+    const serverCMS = (window as any).__STUDIO_CONFIG__?.cms;
+    if (serverCMS && serverCMS.partner_logos) return serverCMS.partner_logos;
     const raw = localStorage.getItem("vfs_cms_partner_logos");
     return raw ? JSON.parse(raw) : { enabled: true, logos: INITIAL_PARTNER_LOGOS };
   });
 
   const [preProductionConfig, setPreProductionConfig] = useState<PreProductionConfig>(() => {
+    const serverCMS = (window as any).__STUDIO_CONFIG__?.cms;
+    if (serverCMS && serverCMS.preproduction) return serverCMS.preproduction;
     const raw = localStorage.getItem("vfs_cms_preproduction");
     return raw ? JSON.parse(raw) : INITIAL_PREPRODUCTION;
   });
 
   const [pricingRates, setPricingRates] = useState<PricingRates>(() => {
+    const serverCMS = (window as any).__STUDIO_CONFIG__?.cms;
+    if (serverCMS && serverCMS.pricing_rates) return serverCMS.pricing_rates;
     const raw = localStorage.getItem("vfs_cms_pricing_rates");
     return raw ? JSON.parse(raw) : INITIAL_PRICING_RATES;
   });
 
   const [currency, setCurrency] = useState<"USD" | "NGN">(() => {
+    const serverCMS = (window as any).__STUDIO_CONFIG__?.cms;
+    if (serverCMS && serverCMS.settings?.currency) {
+      const c = serverCMS.settings.currency;
+      if (c === "USD" || c === "NGN") return c;
+    }
     const saved = localStorage.getItem("vfs_currency");
     return (saved === "NGN" || saved === "USD") ? saved : "USD";
   });
@@ -302,7 +321,7 @@ export default function App() {
   useEffect(() => {
     updateInquiryCount();
 
-    // Fetch initial CMS configuration from Firestore database
+    // Fetch initial CMS configuration from Firestore database with server fallback
     const initFirebaseCMS = async () => {
       // Set a robust timeout so first-time visitors are never stuck if connection is extremely slow
       const timeoutId = setTimeout(() => {
@@ -331,37 +350,54 @@ export default function App() {
           getCMSConfig("settings")
         ]);
 
-        if (firestoreHero) {
-          setHeroImages(firestoreHero);
-          localStorage.setItem("vfs_cms_hero", JSON.stringify(firestoreHero));
+        const serverCMS = (window as any).__STUDIO_CONFIG__?.cms || {};
+
+        const activeHero = firestoreHero || serverCMS.hero;
+        if (activeHero) {
+          setHeroImages(activeHero);
+          localStorage.setItem("vfs_cms_hero", JSON.stringify(activeHero));
         }
-        if (firestoreManifesto) {
-          setManifesto(firestoreManifesto);
-          localStorage.setItem("vfs_cms_manifesto_v2", JSON.stringify(firestoreManifesto));
+
+        const activeManifesto = firestoreManifesto || serverCMS.manifesto;
+        if (activeManifesto) {
+          setManifesto(activeManifesto);
+          localStorage.setItem("vfs_cms_manifesto_v2", JSON.stringify(activeManifesto));
         }
-        if (firestorePortfolio) {
-          setPortfolioItems(firestorePortfolio);
-          localStorage.setItem("vfs_cms_portfolio", JSON.stringify(firestorePortfolio));
+
+        const activePortfolio = firestorePortfolio || serverCMS.portfolio;
+        if (activePortfolio) {
+          setPortfolioItems(activePortfolio);
+          localStorage.setItem("vfs_cms_portfolio", JSON.stringify(activePortfolio));
         }
-        if (firestoreServices) {
-          setServicesTiers(firestoreServices);
-          localStorage.setItem("vfs_cms_services_v2", JSON.stringify(firestoreServices));
+
+        const activeServices = firestoreServices || serverCMS.services;
+        if (activeServices) {
+          setServicesTiers(activeServices);
+          localStorage.setItem("vfs_cms_services_v2", JSON.stringify(activeServices));
         }
-        if (firestoreLogos) {
-          setPartnerLogosConfig(firestoreLogos);
-          localStorage.setItem("vfs_cms_partner_logos", JSON.stringify(firestoreLogos));
+
+        const activeLogos = firestoreLogos || serverCMS.partner_logos;
+        if (activeLogos) {
+          setPartnerLogosConfig(activeLogos);
+          localStorage.setItem("vfs_cms_partner_logos", JSON.stringify(activeLogos));
         }
-        if (firestorePreProd) {
-          setPreProductionConfig(firestorePreProd);
-          localStorage.setItem("vfs_cms_preproduction", JSON.stringify(firestorePreProd));
+
+        const activePreProd = firestorePreProd || serverCMS.preproduction;
+        if (activePreProd) {
+          setPreProductionConfig(activePreProd);
+          localStorage.setItem("vfs_cms_preproduction", JSON.stringify(activePreProd));
         }
-        if (firestorePricingRates) {
-          setPricingRates(firestorePricingRates);
-          localStorage.setItem("vfs_cms_pricing_rates", JSON.stringify(firestorePricingRates));
+
+        const activePricingRates = firestorePricingRates || serverCMS.pricing_rates;
+        if (activePricingRates) {
+          setPricingRates(activePricingRates);
+          localStorage.setItem("vfs_cms_pricing_rates", JSON.stringify(activePricingRates));
         }
-        if (firestoreSettings && (firestoreSettings.currency === "USD" || firestoreSettings.currency === "NGN")) {
-          setCurrency(firestoreSettings.currency);
-          localStorage.setItem("vfs_currency", firestoreSettings.currency);
+
+        const activeSettings = firestoreSettings || serverCMS.settings;
+        if (activeSettings && (activeSettings.currency === "USD" || activeSettings.currency === "NGN")) {
+          setCurrency(activeSettings.currency);
+          localStorage.setItem("vfs_currency", activeSettings.currency);
         }
       } catch (err) {
         console.error("Failed to fetch initial cloud configurations:", err);

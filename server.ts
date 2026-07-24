@@ -570,6 +570,38 @@ async function startServer() {
     res.json(config);
   });
 
+  // API Route: Save custom CMS configurations to server fallback persistently
+  app.post("/api/save-cms-config", (req, res) => {
+    try {
+      const { docId, data } = req.body;
+      if (!docId) {
+        return res.status(400).json({ error: "Missing docId" });
+      }
+
+      const studioConfigPath = path.join(process.cwd(), "studio-config.json");
+      let currentConfig: any = {};
+      
+      if (fs.existsSync(studioConfigPath)) {
+        try {
+          currentConfig = JSON.parse(fs.readFileSync(studioConfigPath, "utf-8"));
+        } catch (e) {
+          console.error("Error reading existing studio-config.json for CMS save:", e);
+        }
+      }
+
+      if (!currentConfig.cms) {
+        currentConfig.cms = {};
+      }
+      currentConfig.cms[docId] = data;
+
+      fs.writeFileSync(studioConfigPath, JSON.stringify(currentConfig, null, 2), "utf-8");
+      res.json({ success: true });
+    } catch (err: any) {
+      console.error("Error saving CMS config to server fallback:", err);
+      res.status(500).json({ error: "Failed to save CMS config", details: err.message });
+    }
+  });
+
   // API Route: Save custom studio configuration (database config and password)
   app.post("/api/save-studio-config", (req, res) => {
     const { firebase, portalPassword } = req.body;
