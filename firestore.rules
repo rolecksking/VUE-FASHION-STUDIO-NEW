@@ -1,0 +1,15 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // 1. Inquiries: Allow read and write for everyone (portal is protected client-side via passcode)
+    match /inquiries/{inquiryId} {
+      allow read, write: if true;
+    }
+    
+    // 2. CMS Config: Allow read and write for everyone (portal is protected client-side via passcode)
+    match /cms_config/{docId} {
+      allow read, write: if true;
+    }
+  }
+}

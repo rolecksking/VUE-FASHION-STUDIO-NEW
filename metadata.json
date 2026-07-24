@@ -1,0 +1,6 @@
+{
+  "name": "Vue Fashion Studio",
+  "description": "Virtual Production Studio for the international fashion industry. Photorealistic 4K virtual production replacing physical photoshoots.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
