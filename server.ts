@@ -686,8 +686,31 @@ async function startServer() {
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath));
+    
+    // Serve static assets with precise Cache-Control rules
+    app.use(express.static(distPath, {
+      maxAge: '1d',
+      setHeaders: (res, filePath) => {
+        if (filePath.endsWith('.html')) {
+          // Explicitly prevent caching of any HTML files
+          res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+          res.setHeader('Pragma', 'no-cache');
+          res.setHeader('Expires', '0');
+        } else if (filePath.includes('/assets/') || filePath.match(/\.[a-f0-9]{8,12}\.(js|css|webp|png|jpe?g|svg|woff2?)$/i)) {
+          // Cache fingerprinted assets (Vite production assets) aggressively
+          res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        } else {
+          // For other non-fingerprinted files, use validation caching
+          res.setHeader('Cache-Control', 'no-cache');
+        }
+      }
+    }));
+
+    // Wildcard fallback serves index.html without caching
     app.get('*', (req, res) => {
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
       res.sendFile(path.join(distPath, 'index.html'));
     });
   }
