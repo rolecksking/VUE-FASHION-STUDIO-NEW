@@ -59,6 +59,7 @@ html {
   background-color: var(--color-black-theme);
   color: var(--color-white-theme);
   transition: background-color 0.5s cubic-bezier(0.16, 1, 0.3, 1), color 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  zoom: 1.25;
 }
 
 body {
