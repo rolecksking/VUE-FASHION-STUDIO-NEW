@@ -5,6 +5,8 @@ import { Menu, X, Globe } from "lucide-react";
 interface HeaderProps {
   lang?: string;
   setLang?: (lang: string) => void;
+  theme?: "light" | "dark";
+  setTheme?: (theme: "light" | "dark") => void;
 }
 
 const TRANSLATIONS = {
@@ -30,7 +32,7 @@ const TRANSLATIONS = {
 
 type LangType = "EN" | "FR" | "IT";
 
-export default function Header({ lang = "EN", setLang }: HeaderProps) {
+export default function Header({ lang = "EN", setLang, theme = "light", setTheme }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -143,6 +145,16 @@ export default function Header({ lang = "EN", setLang }: HeaderProps) {
               </button>
             </div>
 
+            {/* Desktop Theme Switcher */}
+            <div className="hidden sm:flex items-center space-x-2 font-mono text-[9px] tracking-widest uppercase text-neutral-500 border-l border-neutral-800 pl-4">
+              <button
+                onClick={() => setTheme && setTheme(theme === "dark" ? "light" : "dark")}
+                className="transition-colors duration-300 cursor-pointer hover:text-white font-light"
+              >
+                {theme === "dark" ? "LIGHT" : "DARK"}
+              </button>
+            </div>
+
             {/* Mobile/Tablet Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -237,6 +249,37 @@ export default function Header({ lang = "EN", setLang }: HeaderProps) {
                     }`}
                   >
                     Italiano
+                  </button>
+                </div>
+              </div>
+
+              {/* Mobile Theme Selector */}
+              <div className="flex flex-col items-center space-y-2 w-full pt-4 border-t border-neutral-900">
+                <span className="font-sans-luxury text-[8px] tracking-[0.3em] uppercase text-neutral-500">
+                  Select Theme / Choisir le thème
+                </span>
+                <div className="flex items-center space-x-6 font-mono text-xs tracking-[0.2em] uppercase text-neutral-400">
+                  <button
+                    onClick={() => {
+                      setTheme && setTheme("light");
+                      setMobileMenuOpen(false);
+                    }}
+                    className={`transition-colors py-1 px-3 ${
+                      theme === "light" ? "text-white border-b border-white" : "hover:text-white"
+                    }`}
+                  >
+                    Light
+                  </button>
+                  <button
+                    onClick={() => {
+                      setTheme && setTheme("dark");
+                      setMobileMenuOpen(false);
+                    }}
+                    className={`transition-colors py-1 px-3 ${
+                      theme === "dark" ? "text-white border-b border-white" : "hover:text-white"
+                    }`}
+                  >
+                    Dark
                   </button>
                 </div>
               </div>

@@ -190,6 +190,21 @@ export default function App() {
   const [selectedScope, setSelectedScope] = useState<string>("");
   const [lang, setLang] = useState<string>("EN");
 
+  const [theme, setTheme] = useState<"light" | "dark">(() => {
+    const saved = localStorage.getItem("vfs_theme");
+    return (saved === "light" || saved === "dark") ? saved : "light";
+  });
+
+  useEffect(() => {
+    const root = window.document.documentElement;
+    if (theme === "dark") {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+    localStorage.setItem("vfs_theme", theme);
+  }, [theme]);
+
   // Show luxury loading screen for first-time visitors who have no cached content in localStorage
   const [loading, setLoading] = useState(() => {
     return localStorage.getItem("vfs_cms_hero") === null;
@@ -408,7 +423,7 @@ export default function App() {
           key="preloader"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, transition: { duration: 0.6, ease: "easeInOut" } }}
-          className="fixed inset-0 z-50 bg-neutral-950 flex flex-col items-center justify-center font-sans"
+          className="fixed inset-0 z-50 bg-[#0a0a0a] flex flex-col items-center justify-center font-sans"
         >
           <div className="text-center space-y-6 max-w-md px-6">
             <motion.div
@@ -459,7 +474,7 @@ export default function App() {
           className="bg-black text-white relative min-h-screen selection:bg-white selection:text-black antialiased font-sans"
         >
           {/* Absolute Quiet Luxury Header with Language Selector & Mobile Hamburger */}
-          <Header lang={lang} setLang={setLang} />
+          <Header lang={lang} setLang={setLang} theme={theme} setTheme={setTheme} />
 
           {/* Main Single Page Sections */}
           <main>

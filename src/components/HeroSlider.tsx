@@ -76,7 +76,7 @@ export default function HeroSlider({ images, manifesto }: HeroSliderProps) {
           className="absolute inset-0 w-full h-full"
         >
           {/* Subtle vignette/shading overlay to ground text */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/10 to-black/75 z-10 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#000000]/50 via-[#000000]/10 to-[#000000]/75 z-10 pointer-events-none" />
           
           <img
             src={activeImages[currentIndex]?.url}

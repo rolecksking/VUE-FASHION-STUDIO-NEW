@@ -1,23 +1,72 @@
 @import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Inter:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
+:root {
+  /* LIGHT MODE (DEFAULT) */
+  --color-black-theme: #fdfdfd;      /* Background primary: soft luxurious warm off-white */
+  --color-white-theme: #111111;      /* Text primary: rich charcoal/black */
+  --color-950-theme: #f6f5f0;        /* Background secondary: elegant bone */
+  --color-900-theme: #ebeae4;        /* Background tertiary / cards */
+  --color-800-theme: #dfdad0;        /* Borders / dividers */
+  --color-700-theme: #555555;        /* Muted text heavy */
+  --color-600-theme: #777777;        /* Muted text medium */
+  --color-500-theme: #8e8e8e;        /* Muted text */
+  --color-400-theme: #444444;        /* Subheadings / labels */
+  --color-300-theme: #222222;        /* High-contrast sub-labels */
+  --color-200-theme: #1a1a1a;        /* Inverted text white (so dark in light mode) */
+  --color-100-theme: #fdfdfd;        /* Inverted text black (so light in light mode) */
+}
+
+/* When .dark class is added to html/body */
+.dark {
+  /* DARK MODE (CHOSEN BY USER) */
+  --color-black-theme: #000000;
+  --color-white-theme: #ffffff;
+  --color-950-theme: #0a0a0a;
+  --color-900-theme: #171717;
+  --color-800-theme: #262626;
+  --color-700-theme: #404040;
+  --color-600-theme: #525252;
+  --color-500-theme: #737373;
+  --color-400-theme: #a3a3a3;
+  --color-300-theme: #d4d4d4;
+  --color-200-theme: #e5e5e5;
+  --color-100-theme: #f5f5f5;
+}
+
 @theme {
   --font-serif: "Bodoni Moda", serif;
   --font-sans: "Inter", sans-serif;
+  
+  /* Override Tailwind v4 default colors to use our theme variables */
+  --color-black: var(--color-black-theme);
+  --color-white: var(--color-white-theme);
+  --color-neutral-950: var(--color-950-theme);
+  --color-neutral-900: var(--color-900-theme);
+  --color-neutral-800: var(--color-800-theme);
+  --color-neutral-700: var(--color-700-theme);
+  --color-neutral-600: var(--color-600-theme);
+  --color-neutral-500: var(--color-500-theme);
+  --color-neutral-400: var(--color-400-theme);
+  --color-neutral-300: var(--color-300-theme);
+  --color-neutral-200: var(--color-200-theme);
+  --color-neutral-100: var(--color-100-theme);
 }
 
 /* Custom CSS for sleek minimalist feel and snap layouts */
 html {
   scroll-behavior: smooth;
-  background-color: #000000;
-  color: #ffffff;
+  background-color: var(--color-black-theme);
+  color: var(--color-white-theme);
+  transition: background-color 0.5s cubic-bezier(0.16, 1, 0.3, 1), color 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 body {
   font-family: var(--font-sans);
-  background-color: #000000;
-  color: #ffffff;
+  background-color: var(--color-black-theme);
+  color: var(--color-white-theme);
   overflow-x: hidden;
+  transition: background-color 0.5s cubic-bezier(0.16, 1, 0.3, 1), color 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* Custom scrollbars */
@@ -26,14 +75,14 @@ body {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #000000;
+  background: var(--color-black-theme);
 }
 ::-webkit-scrollbar-thumb {
-  background: #333333;
+  background: var(--color-neutral-800);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #666666;
+  background: var(--color-neutral-600);
 }
 
 /* Soft transition effects */
@@ -68,4 +117,3 @@ body {
 .animate-marquee:hover {
   animation-play-state: paused;
 }
-
