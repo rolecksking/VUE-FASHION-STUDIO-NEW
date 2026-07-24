@@ -59,7 +59,7 @@ export default function Header({ lang = "EN", setLang, theme = "light", setTheme
         className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 border-b ${
           scrolled
             ? "bg-black/95 backdrop-blur-md border-neutral-900/90 py-4 shadow-xl"
-            : "bg-transparent border-transparent py-6"
+            : "bg-black/45 backdrop-blur-md border-neutral-800/20 py-5 shadow-sm"
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 sm:px-12 flex items-center justify-between">
