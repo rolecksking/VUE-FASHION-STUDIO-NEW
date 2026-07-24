@@ -468,7 +468,7 @@ export default function App() {
               transition={{ duration: 1, ease: "easeOut" }}
               className="space-y-2"
             >
-              <h1 className="text-white font-display-luxury text-3xl md:text-4xl tracking-[0.3em] uppercase">
+              <h1 className="text-white font-sans font-medium text-3xl md:text-4xl tracking-[0.3em] uppercase">
                 V U E
               </h1>
               <p className="text-neutral-500 font-sans text-[9px] tracking-[0.4em] uppercase">

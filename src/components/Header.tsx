@@ -71,10 +71,10 @@ export default function Header({ lang = "EN", setLang, theme = "light", setTheme
               id="logo"
               className="flex items-center space-x-3 group"
             >
-              <span className="font-display-luxury text-xl font-light tracking-widest text-white border border-white/30 px-2 py-0.5 group-hover:border-white transition-colors duration-300">
+              <span className="font-header-logo text-xl font-light tracking-widest text-white border border-white/30 px-2 py-0.5 group-hover:border-white transition-colors duration-300">
                 VF
               </span>
-              <span className="font-display-luxury text-xs sm:text-sm tracking-[0.25em] font-light text-white uppercase block pt-0.5 group-hover:opacity-80 transition-opacity">
+              <span className="font-header-logo text-xs sm:text-sm tracking-[0.25em] font-light text-white uppercase block pt-0.5 group-hover:opacity-80 transition-opacity">
                 VUE FASHION STUDIO
               </span>
             </a>
