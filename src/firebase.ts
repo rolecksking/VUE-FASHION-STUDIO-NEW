@@ -26,6 +26,43 @@ export const defaultSandboxConfig: FirebaseAppConfig = {
 
 // Retrieve configuration from environment variables or default sandbox
 export function getFirebaseConfig(): FirebaseAppConfig {
+  // 1. Try custom local storage config first (saved by the PortalInquiries custom connect screen)
+  try {
+    const localRaw = localStorage.getItem("vfs_custom_firebase_config");
+    if (localRaw) {
+      const parsed = JSON.parse(localRaw);
+      if (parsed && parsed.projectId && parsed.apiKey) {
+        return {
+          apiKey: parsed.apiKey,
+          authDomain: parsed.authDomain || `${parsed.projectId}.firebaseapp.com`,
+          projectId: parsed.projectId,
+          storageBucket: parsed.storageBucket || `${parsed.projectId}.firebasestorage.app`,
+          messagingSenderId: parsed.messagingSenderId || "",
+          appId: parsed.appId || "",
+          databaseId: parsed.databaseId || parsed.firestoreDatabaseId || "(default)"
+        };
+      }
+    }
+  } catch (e) {
+    console.error("Error reading custom firebase config from localStorage:", e);
+  }
+
+  // 2. Try window.__STUDIO_CONFIG__ injected by the server
+  const studioConfig = (window as any).__STUDIO_CONFIG__;
+  if (studioConfig && studioConfig.firebase && studioConfig.firebase.projectId && studioConfig.firebase.apiKey) {
+    const fb = studioConfig.firebase;
+    return {
+      apiKey: fb.apiKey,
+      authDomain: fb.authDomain || `${fb.projectId}.firebaseapp.com`,
+      projectId: fb.projectId,
+      storageBucket: fb.storageBucket || `${fb.projectId}.firebasestorage.app`,
+      messagingSenderId: fb.messagingSenderId || "",
+      appId: fb.appId || "",
+      databaseId: fb.databaseId || fb.firestoreDatabaseId || "(default)"
+    };
+  }
+
+  // 3. Fall back to Vite environment variables
   const metaEnv = (import.meta as any).env || {};
   const envConfig = {
     apiKey: metaEnv.VITE_FIREBASE_API_KEY,
