@@ -133,12 +133,12 @@ export default function InquiryForm({ onInquirySubmitted, tiers, selectedScope, 
   return (
     <section
       id="inquire"
-      className="bg-black text-white py-32 px-6 sm:px-12 relative overflow-hidden"
+      className="bg-black text-white py-16 px-6 sm:px-12 relative overflow-hidden"
     >
       <div className="max-w-4xl mx-auto relative z-10">
         
         {/* Header and subtitle */}
-        <div className="text-center mb-20">
+        <div className="text-center mb-12">
           <span className="font-sans-luxury text-[10px] tracking-[0.4em] uppercase text-neutral-500 block mb-4">
             Bespoke Inquiries
           </span>

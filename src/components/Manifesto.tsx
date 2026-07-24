@@ -17,7 +17,7 @@ export default function Manifesto({ tagline, title, body, signature }: Manifesto
   return (
     <section
       id="manifesto"
-      className="relative bg-black text-white py-32 md:py-48 px-6 sm:px-12 overflow-hidden border-b border-neutral-900"
+      className="relative bg-black text-white py-16 md:py-24 px-6 sm:px-12 overflow-hidden border-b border-neutral-900"
     >
       <div className="max-w-4xl mx-auto relative z-10 flex flex-col items-center text-center">
         {/* Subtle Section Tag */}
@@ -37,7 +37,7 @@ export default function Manifesto({ tagline, title, body, signature }: Manifesto
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 1.2, delay: 0.2 }}
-          className="font-serif-luxury text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light tracking-wide leading-tight mb-12 max-w-3xl text-white"
+          className="font-serif-luxury text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light tracking-wide leading-tight mb-8 max-w-3xl text-white"
         >
           {activeTitle}
         </motion.h2>
@@ -48,7 +48,7 @@ export default function Manifesto({ tagline, title, body, signature }: Manifesto
           whileInView={{ scaleX: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
-          className="w-20 h-[1px] bg-neutral-600 mb-12 origin-center"
+          className="w-20 h-[1px] bg-neutral-600 mb-8 origin-center"
         />
 
         {/* Body Text */}
@@ -68,7 +68,7 @@ export default function Manifesto({ tagline, title, body, signature }: Manifesto
           whileInView={{ opacity: 0.3 }}
           viewport={{ once: true }}
           transition={{ duration: 1.5, delay: 0.8 }}
-          className="mt-16 font-serif-luxury italic text-xs tracking-widest text-neutral-400"
+          className="mt-10 font-serif-luxury italic text-xs tracking-widest text-neutral-400"
         >
           {activeSignature}
         </motion.div>

@@ -704,11 +704,11 @@ export default function Services({ tiers, onRequestTier, pricingRates, currency 
   return (
     <section
       id="services"
-      className="bg-black text-white py-32 px-6 sm:px-12 border-b border-neutral-900"
+      className="bg-black text-white py-16 px-6 sm:px-12 border-b border-neutral-900"
     >
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
-        <div className="mb-20 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+        <div className="mb-12 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
           <div>
             <span className="font-sans-luxury text-[10px] tracking-[0.4em] uppercase text-neutral-500 block mb-4">
               VUE FASHION STUDIO — DIGITAL PRODUCTION

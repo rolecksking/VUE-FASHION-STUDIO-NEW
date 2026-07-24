@@ -185,7 +185,7 @@ SUPPORT: tech-ateliers@vuefashionstudio.com
   return (
     <section
       id="specifications"
-      className="bg-black text-white py-32 px-6 sm:px-12 border-b border-neutral-900/60 overflow-hidden relative"
+      className="bg-black text-white py-16 px-6 sm:px-12 border-b border-neutral-900/60 overflow-hidden relative"
     >
       {/* Background ambient editorial grain overlay */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-neutral-950/20 via-black to-black opacity-95 pointer-events-none" />

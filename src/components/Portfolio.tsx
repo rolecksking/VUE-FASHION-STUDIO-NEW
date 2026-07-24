@@ -206,7 +206,7 @@ export default function Portfolio({ items }: PortfolioProps) {
   return (
     <section
       id="portfolio"
-      className="bg-black text-white py-32 px-6 sm:px-12 border-b border-neutral-900 scroll-mt-20"
+      className="bg-black text-white py-16 px-6 sm:px-12 border-b border-neutral-900 scroll-mt-20"
     >
       <div className="max-w-7xl mx-auto">
         <AnimatePresence mode="wait">
@@ -220,7 +220,7 @@ export default function Portfolio({ items }: PortfolioProps) {
               transition={{ duration: 0.6 }}
             >
               {/* Section Header */}
-              <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8">
+              <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-8">
                 <div>
                   <span className="font-sans-luxury text-[10px] tracking-[0.4em] uppercase text-neutral-500 block mb-4">
                     Editorial Campaigns
