@@ -1948,7 +1948,7 @@ export default function Services({ tiers, onRequestTier, pricingRates, currency 
               </div>
 
               {/* Dynamic Estimated Investment Display */}
-              <div className="py-6 border-y border-neutral-900 flex justify-between items-baseline gap-4">
+              <div className="py-6 border-y border-neutral-900 flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-6 sm:gap-4">
                 <div>
                   <span className="font-sans-luxury text-[10px] tracking-widest text-neutral-500 uppercase block mb-1">
                     Estimated Studio Investment
@@ -1964,7 +1964,7 @@ export default function Services({ tiers, onRequestTier, pricingRates, currency 
                   </motion.div>
                 </div>
 
-                <div className="text-right">
+                <div className="text-left sm:text-right">
                   <span className="font-sans-luxury text-[10px] tracking-widest text-neutral-500 uppercase block mb-1">
                     Estimated Production Timeline
                   </span>
@@ -1973,7 +1973,7 @@ export default function Services({ tiers, onRequestTier, pricingRates, currency 
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
-                    className="font-sans-luxury text-xs text-neutral-200 uppercase tracking-widest font-semibold flex items-center justify-end gap-1.5"
+                    className="font-sans-luxury text-xs text-neutral-200 uppercase tracking-widest font-semibold flex items-center sm:justify-end gap-1.5"
                   >
                     <Clock size={11} className="text-neutral-500" />
                     {dynamicTimeline}

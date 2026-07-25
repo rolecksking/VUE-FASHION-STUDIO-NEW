@@ -34,7 +34,7 @@ export default function StudioPhilosophy({ manifesto }: StudioPhilosophyProps) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 1, delay: 0.1 }}
-          className="font-serif-luxury text-3xl sm:text-4xl lg:text-5xl font-light tracking-wide text-white leading-tight max-w-none whitespace-nowrap"
+          className="font-serif-luxury text-2xl sm:text-4xl lg:text-5xl font-light tracking-wide text-white leading-tight max-w-none whitespace-normal md:whitespace-nowrap"
         >
           {activeTitle}
         </motion.h2>
