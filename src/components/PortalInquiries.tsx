@@ -179,7 +179,15 @@ export default function PortalInquiries({
   }, [lockoutTime]);
   
   // Local form states to hold edit inputs before saving
-  const [localManifesto, setLocalManifesto] = useState({ tagline: "", title: "", body: "", signature: "" });
+  const [localManifesto, setLocalManifesto] = useState({ 
+    tagline: "", 
+    title: "", 
+    body: "", 
+    signature: "",
+    philosophyTagline: "",
+    philosophyTitle: "",
+    philosophyBody: ""
+  });
   const [localHero, setLocalHero] = useState<any[]>([]);
   const [localTiers, setLocalTiers] = useState<ServiceTier[]>([]);
   
@@ -339,7 +347,15 @@ export default function PortalInquiries({
       loadInquiries();
       loadSmtpConfig();
       // Sync local edit states with current global values
-      setLocalManifesto({ ...manifesto });
+      setLocalManifesto({ 
+        tagline: manifesto?.tagline || "", 
+        title: manifesto?.title || "", 
+        body: manifesto?.body || "", 
+        signature: manifesto?.signature || "",
+        philosophyTagline: manifesto?.philosophyTagline || "STUDIO PHILOSOPHY",
+        philosophyTitle: manifesto?.philosophyTitle || "Bespoke Artistry, Digital Scale",
+        philosophyBody: manifesto?.philosophyBody || "We combine traditional editorial art direction with modern virtual production. We don't just “generate” assets—we curate models, design environments, and light each look to your brand's unique specification. The result is the editorial polish you expect, with the agility your business demands."
+      });
       setLocalHero([...heroImages]);
       setLocalTiers([...servicesTiers]);
 
@@ -1594,6 +1610,46 @@ export default function PortalInquiries({
                               onChange={(e) => setLocalManifesto({ ...localManifesto, signature: e.target.value })}
                               className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2 focus:border-white focus:outline-none font-light"
                             />
+                          </div>
+
+                          {/* Studio Philosophy Fields */}
+                          <div className="pt-4 border-t border-neutral-900 mt-4 space-y-4">
+                            <h5 className="font-sans-luxury text-[10px] tracking-widest uppercase text-neutral-400 font-semibold">
+                              Studio Philosophy Section Copy
+                            </h5>
+                            
+                            <div className="flex flex-col space-y-1.5">
+                              <label className="text-[9px] tracking-widest uppercase text-neutral-400">Philosophy Tagline</label>
+                              <input
+                                type="text"
+                                value={localManifesto.philosophyTagline || ""}
+                                onChange={(e) => setLocalManifesto({ ...localManifesto, philosophyTagline: e.target.value })}
+                                className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2 focus:border-white focus:outline-none font-light"
+                                placeholder="STUDIO PHILOSOPHY"
+                              />
+                            </div>
+
+                            <div className="flex flex-col space-y-1.5">
+                              <label className="text-[9px] tracking-widest uppercase text-neutral-400">Philosophy Title</label>
+                              <input
+                                type="text"
+                                value={localManifesto.philosophyTitle || ""}
+                                onChange={(e) => setLocalManifesto({ ...localManifesto, philosophyTitle: e.target.value })}
+                                className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2 focus:border-white focus:outline-none font-light"
+                                placeholder="Bespoke Artistry, Digital Scale"
+                              />
+                            </div>
+
+                            <div className="flex flex-col space-y-1.5">
+                              <label className="text-[9px] tracking-widest uppercase text-neutral-400">Philosophy Body Paragraph</label>
+                              <textarea
+                                rows={4}
+                                value={localManifesto.philosophyBody || ""}
+                                onChange={(e) => setLocalManifesto({ ...localManifesto, philosophyBody: e.target.value })}
+                                className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2.5 focus:border-white focus:outline-none font-light leading-relaxed"
+                                placeholder="Philosophy text paragraph..."
+                              />
+                            </div>
                           </div>
                         </div>
                       </div>
