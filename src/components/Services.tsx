@@ -147,6 +147,9 @@ interface ServicesProps {
   onRequestTier?: (scopeName: string) => void;
   pricingRates?: PricingRates;
   currency?: "USD" | "NGN";
+  campaignBuilderBody?: string;
+  suitabilityTitle?: string;
+  suitabilityBody?: string;
 }
 
 const USD_TO_NGN_RATE = 1600;
@@ -171,7 +174,15 @@ const getFormattedPriceEstimate = (estimate: string, currency: "USD" | "NGN" = "
   return estimate;
 };
 
-export default function Services({ tiers, onRequestTier, pricingRates, currency = "USD" }: ServicesProps) {
+export default function Services({ 
+  tiers, 
+  onRequestTier, 
+  pricingRates, 
+  currency = "USD",
+  campaignBuilderBody = "We provide end-to-end fashion campaign photography. We handle the casting, set design, and editorial lighting to deliver high-resolution assets indistinguishable from a physical studio production.",
+  suitabilityTitle = "CAMPAIGN SUITABILITY",
+  suitabilityBody = "Luxury houses seeking immersive runway launches, high-end campaign assets, or virtual showrooms."
+}: ServicesProps) {
   const activeTiers = tiers && tiers.length > 0 ? tiers : DEFAULT_SERVICE_TIERS;
 
   // Campaign request submission states
@@ -719,7 +730,7 @@ export default function Services({ tiers, onRequestTier, pricingRates, currency 
           </div>
           <div className="lg:col-span-5">
             <p className="text-xs text-neutral-400 font-sans-luxury tracking-wide font-light leading-relaxed">
-              We provide end-to-end fashion campaign photography. We handle the casting, set design, and editorial lighting to deliver high-resolution assets indistinguishable from a physical studio production.
+              {campaignBuilderBody}
             </p>
           </div>
         </div>
@@ -1985,10 +1996,10 @@ export default function Services({ tiers, onRequestTier, pricingRates, currency 
               <div className="space-y-4">
                 <div>
                   <span className="font-sans-luxury text-[9px] tracking-widest text-neutral-500 uppercase block mb-1">
-                    CAMPAIGN SUITABILITY
+                    {suitabilityTitle}
                   </span>
                   <p className="font-sans-luxury text-[11px] text-neutral-400 leading-relaxed font-light">
-                    {activeTier.idealFor}
+                    {activeTier.id === "tier-3" ? suitabilityBody : activeTier.idealFor}
                   </p>
                 </div>
 

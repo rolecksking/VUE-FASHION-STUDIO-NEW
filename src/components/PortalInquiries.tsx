@@ -1691,6 +1691,46 @@ export default function PortalInquiries({
                               />
                             </div>
                           </div>
+
+                          {/* Campaign Builder & Suitability Section Fields */}
+                          <div className="pt-4 border-t border-neutral-900 mt-4 space-y-4">
+                            <h5 className="font-sans-luxury text-[10px] tracking-widest uppercase text-neutral-400 font-semibold">
+                              Campaign Builder & Suitability Copy
+                            </h5>
+                            
+                            <div className="flex flex-col space-y-1.5">
+                              <label className="text-[9px] tracking-widest uppercase text-neutral-400">Campaign Builder Description</label>
+                              <textarea
+                                rows={3}
+                                value={localManifesto.campaignBuilderBody || ""}
+                                onChange={(e) => setLocalManifesto({ ...localManifesto, campaignBuilderBody: e.target.value })}
+                                className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2.5 focus:border-white focus:outline-none font-light leading-relaxed"
+                                placeholder="We provide end-to-end fashion campaign photography..."
+                              />
+                            </div>
+
+                            <div className="flex flex-col space-y-1.5">
+                              <label className="text-[9px] tracking-widest uppercase text-neutral-400">Suitability Section Title</label>
+                              <input
+                                type="text"
+                                value={localManifesto.suitabilityTitle || ""}
+                                onChange={(e) => setLocalManifesto({ ...localManifesto, suitabilityTitle: e.target.value })}
+                                className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2 focus:border-white focus:outline-none font-light"
+                                placeholder="CAMPAIGN SUITABILITY"
+                              />
+                            </div>
+
+                            <div className="flex flex-col space-y-1.5">
+                              <label className="text-[9px] tracking-widest uppercase text-neutral-400">Suitability Description</label>
+                              <textarea
+                                rows={3}
+                                value={localManifesto.suitabilityBody || ""}
+                                onChange={(e) => setLocalManifesto({ ...localManifesto, suitabilityBody: e.target.value })}
+                                className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2.5 focus:border-white focus:outline-none font-light leading-relaxed"
+                                placeholder="Luxury houses seeking immersive runway launches..."
+                              />
+                            </div>
+                          </div>
                         </div>
                       </div>
 

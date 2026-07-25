@@ -91,7 +91,10 @@ const INITIAL_MANIFESTO = {
   philosophyBody: "We combine traditional editorial art direction with modern virtual production. We don't just “generate” assets—we curate models, design environments, and light each look to your brand's unique specification. The result is the editorial polish you expect, with the agility your business demands.",
   inquiryTagline: "Bespoke Inquiries",
   inquiryTitle: "Initiate Production",
-  inquiryBody: "Contact our Global Atelier to request booking availability. Our team coordinates creative direction, environment layout, and structural fabric scanning."
+  inquiryBody: "Contact our Global Atelier to request booking availability. Our team coordinates creative direction, environment layout, and structural fabric scanning.",
+  campaignBuilderBody: "We provide end-to-end fashion campaign photography. We handle the casting, set design, and editorial lighting to deliver high-resolution assets indistinguishable from a physical studio production.",
+  suitabilityTitle: "CAMPAIGN SUITABILITY",
+  suitabilityBody: "Luxury houses seeking immersive runway launches, high-end campaign assets, or virtual showrooms."
 };
 
 const INITIAL_PORTFOLIO: CampaignItem[] = [
@@ -531,7 +534,15 @@ export default function App() {
             <PartnerLogos config={partnerLogosConfig} />
 
             {/* Services & Tiered Production Tables (Campaign Builder) - Directly below Hero */}
-            <Services tiers={servicesTiers} onRequestTier={setSelectedScope} pricingRates={pricingRates} currency={currency} />
+            <Services 
+              tiers={servicesTiers} 
+              onRequestTier={setSelectedScope} 
+              pricingRates={pricingRates} 
+              currency={currency}
+              campaignBuilderBody={manifesto?.campaignBuilderBody}
+              suitabilityTitle={manifesto?.suitabilityTitle}
+              suitabilityBody={manifesto?.suitabilityBody}
+            />
 
             {/* Client Asset Specs and Downloader (PRE-PRODUCTION PREPARATION) */}
             <AssetSpecs preProductionConfig={preProductionConfig} />
