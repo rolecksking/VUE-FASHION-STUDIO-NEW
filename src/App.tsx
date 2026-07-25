@@ -88,7 +88,10 @@ const INITIAL_MANIFESTO = {
   signature: "— Paris / Milan / Tokyo / New York",
   philosophyTagline: "STUDIO PHILOSOPHY",
   philosophyTitle: "Bespoke Artistry, Digital Scale",
-  philosophyBody: "We combine traditional editorial art direction with modern virtual production. We don't just “generate” assets—we curate models, design environments, and light each look to your brand's unique specification. The result is the editorial polish you expect, with the agility your business demands."
+  philosophyBody: "We combine traditional editorial art direction with modern virtual production. We don't just “generate” assets—we curate models, design environments, and light each look to your brand's unique specification. The result is the editorial polish you expect, with the agility your business demands.",
+  inquiryTagline: "Bespoke Inquiries",
+  inquiryTitle: "Initiate Production",
+  inquiryBody: "Contact our Global Atelier to request booking availability. Our team coordinates creative direction, environment layout, and structural fabric scanning."
 };
 
 const INITIAL_PORTFOLIO: CampaignItem[] = [
@@ -542,6 +545,9 @@ export default function App() {
               tiers={servicesTiers}
               selectedScope={selectedScope}
               currency={currency}
+              inquiryTagline={manifesto?.inquiryTagline}
+              inquiryTitle={manifesto?.inquiryTitle}
+              inquiryBody={manifesto?.inquiryBody}
             />
           </main>
 

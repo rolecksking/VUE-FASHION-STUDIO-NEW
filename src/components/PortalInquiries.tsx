@@ -1651,6 +1651,46 @@ export default function PortalInquiries({
                               />
                             </div>
                           </div>
+
+                          {/* Bespoke Inquiries Section Fields */}
+                          <div className="pt-4 border-t border-neutral-900 mt-4 space-y-4">
+                            <h5 className="font-sans-luxury text-[10px] tracking-widest uppercase text-neutral-400 font-semibold">
+                              Bespoke Inquiries Contact Section Copy
+                            </h5>
+                            
+                            <div className="flex flex-col space-y-1.5">
+                              <label className="text-[9px] tracking-widest uppercase text-neutral-400">Inquiries Tagline</label>
+                              <input
+                                type="text"
+                                value={localManifesto.inquiryTagline || ""}
+                                onChange={(e) => setLocalManifesto({ ...localManifesto, inquiryTagline: e.target.value })}
+                                className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2 focus:border-white focus:outline-none font-light"
+                                placeholder="Bespoke Inquiries"
+                              />
+                            </div>
+
+                            <div className="flex flex-col space-y-1.5">
+                              <label className="text-[9px] tracking-widest uppercase text-neutral-400">Inquiries Title</label>
+                              <input
+                                type="text"
+                                value={localManifesto.inquiryTitle || ""}
+                                onChange={(e) => setLocalManifesto({ ...localManifesto, inquiryTitle: e.target.value })}
+                                className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2 focus:border-white focus:outline-none font-light"
+                                placeholder="Initiate Production"
+                              />
+                            </div>
+
+                            <div className="flex flex-col space-y-1.5">
+                              <label className="text-[9px] tracking-widest uppercase text-neutral-400">Inquiries Description</label>
+                              <textarea
+                                rows={3}
+                                value={localManifesto.inquiryBody || ""}
+                                onChange={(e) => setLocalManifesto({ ...localManifesto, inquiryBody: e.target.value })}
+                                className="bg-neutral-950 border border-neutral-800 text-xs text-white px-3 py-2.5 focus:border-white focus:outline-none font-light leading-relaxed"
+                                placeholder="Contact our Global Atelier to request booking availability..."
+                              />
+                            </div>
+                          </div>
                         </div>
                       </div>
 

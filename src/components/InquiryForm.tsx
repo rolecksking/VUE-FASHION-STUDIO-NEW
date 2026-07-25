@@ -9,11 +9,22 @@ interface InquiryFormProps {
   tiers: ServiceTier[];
   selectedScope: string;
   currency?: "USD" | "NGN";
+  inquiryTagline?: string;
+  inquiryTitle?: string;
+  inquiryBody?: string;
 }
 
 const USD_TO_NGN_RATE = 1600;
 
-export default function InquiryForm({ onInquirySubmitted, tiers, selectedScope, currency = "USD" }: InquiryFormProps) {
+export default function InquiryForm({ 
+  onInquirySubmitted, 
+  tiers, 
+  selectedScope, 
+  currency = "USD",
+  inquiryTagline = "Bespoke Inquiries",
+  inquiryTitle = "Initiate Production",
+  inquiryBody = "Contact our Global Atelier to request booking availability. Our team coordinates creative direction, environment layout, and structural fabric scanning."
+}: InquiryFormProps) {
   const [formData, setFormData] = useState({
     name: "",
     brand: "",
@@ -140,13 +151,13 @@ export default function InquiryForm({ onInquirySubmitted, tiers, selectedScope, 
         {/* Header and subtitle */}
         <div className="text-center mb-12">
           <span className="font-sans-luxury text-[10px] tracking-[0.4em] uppercase text-neutral-500 block mb-4">
-            Bespoke Inquiries
+            {inquiryTagline}
           </span>
           <h2 className="font-serif-luxury text-3xl sm:text-4xl md:text-5xl font-light tracking-wide mb-6">
-            Initiate Production
+            {inquiryTitle}
           </h2>
           <p className="font-sans-luxury text-xs text-neutral-400 max-w-lg mx-auto leading-relaxed tracking-wider font-light">
-            Contact our Global Atelier to request booking availability. Our team coordinates creative direction, environment layout, and structural fabric scanning.
+            {inquiryBody}
           </p>
         </div>
 
