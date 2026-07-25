@@ -70,19 +70,19 @@ export default function Header({ lang = "EN", setLang, theme = "light", setTheme
             : "bg-black/45 backdrop-blur-md border-neutral-800/20 py-5 shadow-sm"
         }`}
       >
-        <div className="max-w-7xl mx-auto px-6 sm:px-12 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-12 flex items-center justify-between">
           
           {/* Left Side: Brand Logo */}
-          <div className="flex items-center min-w-max sm:min-w-[180px] justify-start">
+          <div className="flex items-center min-w-max md:min-w-[180px] justify-start">
             <a
               href="#"
               id="logo"
-              className="flex items-center space-x-3 group"
+              className="flex items-center space-x-2 sm:space-x-3 group"
             >
-              <span className="font-header-logo text-xl font-light tracking-widest text-white border border-white/30 px-2 py-0.5 group-hover:border-white transition-colors duration-300">
+              <span className="font-header-logo text-lg sm:text-xl font-light tracking-widest text-white border border-white/30 px-2 py-0.5 group-hover:border-white transition-colors duration-300">
                 VF
               </span>
-              <span className="font-header-logo text-xs sm:text-sm tracking-[0.25em] font-light text-white uppercase block pt-0.5 group-hover:opacity-80 transition-opacity">
+              <span className="font-header-logo text-xs sm:text-sm tracking-[0.25em] font-light text-white uppercase hidden sm:block pt-0.5 group-hover:opacity-80 transition-opacity">
                 VUE FASHION STUDIO
               </span>
             </a>
@@ -121,7 +121,7 @@ export default function Header({ lang = "EN", setLang, theme = "light", setTheme
           </nav>
 
           {/* Right Side: Language Selector & Mobile Toggle (Symmetrically balanced) */}
-          <div className="flex items-center justify-end space-x-4 sm:space-x-6 min-w-max sm:min-w-[180px]">
+          <div className="flex items-center justify-end space-x-2.5 sm:space-x-6 min-w-max md:min-w-[180px]">
             {/* Language Selector Dropdown (Visible on BOTH mobile and desktop headers to declutter) */}
             <div className="relative z-50">
               <button
@@ -129,7 +129,7 @@ export default function Header({ lang = "EN", setLang, theme = "light", setTheme
                   e.stopPropagation();
                   setLangDropdownOpen(!langDropdownOpen);
                 }}
-                className="flex items-center space-x-1.5 font-mono text-[10px] tracking-widest uppercase text-neutral-400 hover:text-white transition-colors cursor-pointer py-1.5 px-3 rounded border border-neutral-800/40 bg-neutral-900/20 hover:bg-neutral-900/45"
+                className="flex items-center space-x-1 font-mono text-[10px] tracking-widest uppercase text-neutral-400 hover:text-white transition-colors cursor-pointer py-1 px-2 sm:py-1.5 sm:px-3 rounded border border-neutral-800/40 bg-neutral-900/20 hover:bg-neutral-900/45"
                 aria-label="Select language"
               >
                 <Globe size={11} className="text-neutral-500" />
