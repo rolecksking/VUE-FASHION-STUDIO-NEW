@@ -36,7 +36,7 @@ export default function Footer({ onOpenPortal, lang = "EN" }: FooterProps) {
       id="main-footer"
       className="bg-black text-neutral-400 py-16 px-6 sm:px-12 border-t border-neutral-950 font-sans-luxury"
     >
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-12">
+      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-center justify-between gap-10 lg:gap-12">
         
         {/* Left: Brand / Copyright */}
         <div className="space-y-3">
