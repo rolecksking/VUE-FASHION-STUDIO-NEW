@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { Menu, X, Globe } from "lucide-react";
+import { Menu, X, Globe, ChevronDown, Moon, Sun } from "lucide-react";
 
 interface HeaderProps {
   lang?: string;
@@ -35,6 +35,7 @@ type LangType = "EN" | "FR" | "IT";
 export default function Header({ lang = "EN", setLang, theme = "light", setTheme }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [langDropdownOpen, setLangDropdownOpen] = useState(false);
 
   const t = TRANSLATIONS[lang as LangType] || TRANSLATIONS.EN;
 
@@ -45,6 +46,13 @@ export default function Header({ lang = "EN", setLang, theme = "light", setTheme
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (!langDropdownOpen) return;
+    const closeDropdown = () => setLangDropdownOpen(false);
+    window.addEventListener("click", closeDropdown);
+    return () => window.removeEventListener("click", closeDropdown);
+  }, [langDropdownOpen]);
 
   const selectLanguage = (selected: string) => {
     if (setLang) {
@@ -65,7 +73,7 @@ export default function Header({ lang = "EN", setLang, theme = "light", setTheme
         <div className="max-w-7xl mx-auto px-6 sm:px-12 flex items-center justify-between">
           
           {/* Left Side: Brand Logo */}
-          <div className="flex items-center min-w-[180px] justify-start">
+          <div className="flex items-center min-w-max sm:min-w-[180px] justify-start">
             <a
               href="#"
               id="logo"
@@ -113,36 +121,67 @@ export default function Header({ lang = "EN", setLang, theme = "light", setTheme
           </nav>
 
           {/* Right Side: Language Selector & Mobile Toggle (Symmetrically balanced) */}
-          <div className="flex items-center justify-end space-x-6 min-w-[180px]">
-            {/* Desktop Language Selector */}
-            <div className="hidden sm:flex items-center space-x-2 font-mono text-[9px] tracking-widest uppercase text-neutral-500">
-              <Globe size={11} className="text-neutral-600 mr-1" />
+          <div className="flex items-center justify-end space-x-4 sm:space-x-6 min-w-max sm:min-w-[180px]">
+            {/* Language Selector Dropdown (Visible on BOTH mobile and desktop headers to declutter) */}
+            <div className="relative z-50">
               <button
-                onClick={() => selectLanguage("EN")}
-                className={`transition-colors duration-300 cursor-pointer ${
-                  lang === "EN" ? "text-white font-semibold" : "hover:text-white"
-                }`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setLangDropdownOpen(!langDropdownOpen);
+                }}
+                className="flex items-center space-x-1.5 font-mono text-[10px] tracking-widest uppercase text-neutral-400 hover:text-white transition-colors cursor-pointer py-1.5 px-3 rounded border border-neutral-800/40 bg-neutral-900/20 hover:bg-neutral-900/45"
+                aria-label="Select language"
               >
-                EN
+                <Globe size={11} className="text-neutral-500" />
+                <span className="font-semibold text-white">{lang}</span>
+                <ChevronDown size={10} className={`text-neutral-500 transition-transform duration-300 ${langDropdownOpen ? "rotate-180" : ""}`} />
               </button>
-              <span className="text-neutral-800">/</span>
-              <button
-                onClick={() => selectLanguage("FR")}
-                className={`transition-colors duration-300 cursor-pointer ${
-                  lang === "FR" ? "text-white font-semibold" : "hover:text-white"
-                }`}
-              >
-                FR
-              </button>
-              <span className="text-neutral-800">/</span>
-              <button
-                onClick={() => selectLanguage("IT")}
-                className={`transition-colors duration-300 cursor-pointer ${
-                  lang === "IT" ? "text-white font-semibold" : "hover:text-white"
-                }`}
-              >
-                IT
-              </button>
+
+              <AnimatePresence>
+                {langDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    transition={{ duration: 0.15, ease: "easeOut" }}
+                    className="absolute right-0 mt-2 w-32 rounded bg-neutral-950/95 border border-neutral-800 shadow-2xl py-1 z-50 backdrop-blur-md"
+                  >
+                    <button
+                      onClick={() => {
+                        selectLanguage("EN");
+                        setLangDropdownOpen(false);
+                      }}
+                      className={`w-full text-left px-4 py-2 font-mono text-[10px] tracking-widest uppercase transition-colors duration-150 ${
+                        lang === "EN" ? "text-white bg-neutral-900 font-bold" : "text-neutral-400 hover:text-white hover:bg-neutral-900/50"
+                      }`}
+                    >
+                      English
+                    </button>
+                    <button
+                      onClick={() => {
+                        selectLanguage("FR");
+                        setLangDropdownOpen(false);
+                      }}
+                      className={`w-full text-left px-4 py-2 font-mono text-[10px] tracking-widest uppercase transition-colors duration-150 ${
+                        lang === "FR" ? "text-white bg-neutral-900 font-bold" : "text-neutral-400 hover:text-white hover:bg-neutral-900/50"
+                      }`}
+                    >
+                      Français
+                    </button>
+                    <button
+                      onClick={() => {
+                        selectLanguage("IT");
+                        setLangDropdownOpen(false);
+                      }}
+                      className={`w-full text-left px-4 py-2 font-mono text-[10px] tracking-widest uppercase transition-colors duration-150 ${
+                        lang === "IT" ? "text-white bg-neutral-900 font-bold" : "text-neutral-400 hover:text-white hover:bg-neutral-900/50"
+                      }`}
+                    >
+                      Italiano
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* Desktop Theme Switcher */}
@@ -210,79 +249,30 @@ export default function Header({ lang = "EN", setLang, theme = "light", setTheme
               </a>
             </div>
 
-            {/* Mobile Language & Currency Selectors at bottom */}
-            <div className="flex flex-col items-center space-y-6 pt-6 border-t border-neutral-900">
-              <div className="flex flex-col items-center space-y-2">
-                <span className="font-sans-luxury text-[8px] tracking-[0.3em] uppercase text-neutral-500">
-                  Select Language / Sélectionner la langue
-                </span>
-                <div className="flex items-center space-x-4 font-mono text-xs tracking-[0.2em] uppercase text-neutral-400">
-                  <button
-                    onClick={() => {
-                      selectLanguage("EN");
-                      setMobileMenuOpen(false);
-                    }}
-                    className={`transition-colors py-1 px-2 ${
-                      lang === "EN" ? "text-white border-b border-white" : "hover:text-white"
-                    }`}
-                  >
-                    English
-                  </button>
-                  <button
-                    onClick={() => {
-                      selectLanguage("FR");
-                      setMobileMenuOpen(false);
-                    }}
-                    className={`transition-colors py-1 px-2 ${
-                      lang === "FR" ? "text-white border-b border-white" : "hover:text-white"
-                    }`}
-                  >
-                    Français
-                  </button>
-                  <button
-                    onClick={() => {
-                      selectLanguage("IT");
-                      setMobileMenuOpen(false);
-                    }}
-                    className={`transition-colors py-1 px-2 ${
-                      lang === "IT" ? "text-white border-b border-white" : "hover:text-white"
-                    }`}
-                  >
-                    Italiano
-                  </button>
-                </div>
-              </div>
-
-              {/* Mobile Theme Selector */}
-              <div className="flex flex-col items-center space-y-2 w-full pt-4 border-t border-neutral-900">
-                <span className="font-sans-luxury text-[8px] tracking-[0.3em] uppercase text-neutral-500">
-                  Select Theme / Choisir le thème
-                </span>
-                <div className="flex items-center space-x-6 font-mono text-xs tracking-[0.2em] uppercase text-neutral-400">
-                  <button
-                    onClick={() => {
-                      setTheme && setTheme("light");
-                      setMobileMenuOpen(false);
-                    }}
-                    className={`transition-colors py-1 px-3 ${
-                      theme === "light" ? "text-white border-b border-white" : "hover:text-white"
-                    }`}
-                  >
-                    Light
-                  </button>
-                  <button
-                    onClick={() => {
-                      setTheme && setTheme("dark");
-                      setMobileMenuOpen(false);
-                    }}
-                    className={`transition-colors py-1 px-3 ${
-                      theme === "dark" ? "text-white border-b border-white" : "hover:text-white"
-                    }`}
-                  >
-                    Dark
-                  </button>
-                </div>
-              </div>
+            {/* Mobile Theme Switcher at bottom (Language switcher is removed to declutter as requested) */}
+            <div className="flex flex-col items-center space-y-3 pt-6 border-t border-neutral-900 w-full mt-auto">
+              <span className="font-sans-luxury text-[8px] tracking-[0.3em] uppercase text-neutral-500">
+                Appearance / Thème
+              </span>
+              <button
+                onClick={() => {
+                  setTheme && setTheme(theme === "dark" ? "light" : "dark");
+                  setMobileMenuOpen(false);
+                }}
+                className="flex items-center space-x-3 px-5 py-2.5 rounded-full border border-neutral-800 bg-neutral-900/40 hover:bg-neutral-900 transition-colors font-mono text-xs tracking-[0.2em] uppercase text-neutral-300 hover:text-white cursor-pointer"
+              >
+                {theme === "dark" ? (
+                  <>
+                    <Sun size={14} className="text-amber-400" />
+                    <span>Light Mode</span>
+                  </>
+                ) : (
+                  <>
+                    <Moon size={14} className="text-indigo-400" />
+                    <span>Dark Mode</span>
+                  </>
+                )}
+              </button>
             </div>
           </motion.div>
         )}
