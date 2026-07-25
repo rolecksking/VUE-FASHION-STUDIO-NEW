@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { getCMSConfig, saveCMSConfig, getInquiries } from "./firebase";
 import Header from "./components/Header";
 import HeroSlider from "./components/HeroSlider";
+import StudioPhilosophy from "./components/StudioPhilosophy";
 import Portfolio from "./components/Portfolio";
 import Services from "./components/Services";
 import AssetSpecs from "./components/AssetSpecs";
@@ -83,7 +84,7 @@ const INITIAL_HERO = [
 const INITIAL_MANIFESTO = {
   tagline: "Our Manifesto",
   title: "The Future of Production",
-  body: "We provide end-to-end fashion campaign photography. We handle the casting, set design, and editorial lighting to deliver high-resolution assets indistinguishable from a physical studio production.",
+  body: "Vue Fashion Studio: Next-Generation Fashion Production. We deliver world-class editorial campaigns using virtual production technology. No physical sets, no logistics, no limits. Just 4K editorial perfection.",
   signature: "— Paris / Milan / Tokyo / New York",
 };
 
@@ -516,6 +517,9 @@ export default function App() {
           <main>
             {/* Full screen HD Slider Hero with integrated Brand Manifesto (with language translation) */}
             <HeroSlider images={heroImages} manifesto={getTranslatedManifesto()} />
+
+            {/* Studio Philosophy Section */}
+            <StudioPhilosophy />
 
             {/* Scrolling Fashion Partner Logos (Client Portfolio Marquee) */}
             <PartnerLogos config={partnerLogosConfig} />

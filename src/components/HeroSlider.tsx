@@ -36,7 +36,7 @@ export default function HeroSlider({ images, manifesto }: HeroSliderProps) {
 
   const activeTagline = manifesto?.tagline || "Our Manifesto";
   const activeTitle = manifesto?.title || "The Future of Production";
-  const activeBody = manifesto?.body || "We provide end-to-end fashion campaign photography. We handle the casting, set design, and editorial lighting to deliver high-resolution assets indistinguishable from a physical studio production.";
+  const activeBody = manifesto?.body || "Vue Fashion Studio: Next-Generation Fashion Production. We deliver world-class editorial campaigns using virtual production technology. No physical sets, no logistics, no limits. Just 4K editorial perfection.";
   const activeSignature = manifesto?.signature || "— Paris / Milan / Tokyo / New York";
 
   useEffect(() => {
