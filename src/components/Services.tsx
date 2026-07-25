@@ -708,8 +708,8 @@ export default function Services({ tiers, onRequestTier, pricingRates, currency 
     >
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
-        <div className="mb-12 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-          <div>
+        <div className="mb-12 grid grid-cols-1 lg:grid-cols-12 gap-12 items-end">
+          <div className="lg:col-span-7">
             <span className="font-sans-luxury text-[10px] tracking-[0.4em] uppercase text-neutral-500 block mb-4">
               VUE FASHION STUDIO — DIGITAL PRODUCTION
             </span>
@@ -717,17 +717,22 @@ export default function Services({ tiers, onRequestTier, pricingRates, currency 
               Campaign Builder
             </h2>
           </div>
-          <p className="max-w-md text-xs text-neutral-400 font-sans-luxury tracking-wide font-light leading-relaxed">
-            We provide end-to-end fashion campaign photography. We handle the casting, set design, and editorial lighting to deliver high-resolution assets indistinguishable from a physical studio production.
-          </p>
+          <div className="lg:col-span-5">
+            <p className="text-xs text-neutral-400 font-sans-luxury tracking-wide font-light leading-relaxed">
+              We provide end-to-end fashion campaign photography. We handle the casting, set design, and editorial lighting to deliver high-resolution assets indistinguishable from a physical studio production.
+            </p>
+          </div>
         </div>
 
         {/* Master Builder Interface Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-stretch">
           
           {/* Left Column: Interactive Inputs */}
-          <div className="lg:col-span-7 flex flex-col justify-between border border-neutral-900 bg-neutral-950/40 p-8 md:p-12">
-            <div className="space-y-12">
+          <div className="lg:col-span-7 flex flex-col justify-between border border-white/20 bg-gradient-to-b from-neutral-950 to-black p-8 md:p-12 relative overflow-hidden">
+            {/* Symmetrical elegant visual line accent */}
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-white/40" />
+            
+            <div className="space-y-12 relative z-10">
               
               {/* Step 1: Product Shot Requests & Collection Builder */}
               <div>
@@ -767,9 +772,9 @@ export default function Services({ tiers, onRequestTier, pricingRates, currency 
                       </p>
 
                 {/* Products Configurator Container */}
-                <div className="space-y-6 p-6 border border-neutral-900 bg-neutral-950/40 rounded-sm">
+                <div className="space-y-6 p-6 border border-white/20 bg-neutral-900/30 rounded-sm">
                   {/* Tabs header with Add Button */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-900 pb-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/15 pb-4">
                     <div>
                       <span className="text-[10px] font-mono tracking-widest text-neutral-400 uppercase font-semibold block">
                         Collection Pieces ({productRequests.length})
@@ -908,7 +913,7 @@ export default function Services({ tiers, onRequestTier, pricingRates, currency 
               </div>
 
               {/* Step 2: Model Curation */}
-              <div className="pt-8 border-t border-neutral-900/60">
+              <div className="pt-8 border-t border-white/20">
                 <div 
                   onClick={() => setIsModelCurationOpen(!isModelCurationOpen)}
                   className="flex items-center justify-between cursor-pointer group py-2 select-none"
@@ -956,7 +961,7 @@ export default function Services({ tiers, onRequestTier, pricingRates, currency 
                     className={`flex flex-col p-5 border text-left transition-all duration-300 cursor-pointer ${
                       !activeProduct.isBespokeModel
                         ? "bg-white border-white text-black"
-                        : "bg-transparent border-neutral-900 hover:border-neutral-700 text-white"
+                        : "bg-transparent border-white/20 hover:border-white/40 text-white"
                     }`}
                   >
                     <div className="flex items-center gap-2 mb-2">
@@ -977,7 +982,7 @@ export default function Services({ tiers, onRequestTier, pricingRates, currency 
                     className={`flex flex-col p-5 border text-left transition-all duration-300 cursor-pointer ${
                       activeProduct.isBespokeModel
                         ? "bg-white border-white text-black"
-                        : "bg-transparent border-neutral-900 hover:border-neutral-700 text-white"
+                        : "bg-transparent border-white/20 hover:border-white/40 text-white"
                     }`}
                   >
                     <div className="flex items-center gap-2 mb-2">
@@ -993,13 +998,13 @@ export default function Services({ tiers, onRequestTier, pricingRates, currency 
                 </div>
 
                 {/* Customization Form Container */}
-                <div className="space-y-6 pt-6 border-t border-neutral-900/40">
+                <div className="space-y-6 pt-6 border-t border-white/15">
                   
                   {/* If Bespoke mode is active, show the count controller and the selector tabs */}
                   {activeProduct.isBespokeModel && (
                     <div className="space-y-6">
                       {/* Model Count Controller */}
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 border border-neutral-900 bg-neutral-950/20">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 border border-white/20 bg-neutral-900/30">
                         <div>
                           <span className="font-sans-luxury text-[10px] tracking-widest text-white uppercase font-semibold">
                             Bespoke Model Variants
@@ -1250,7 +1255,7 @@ export default function Services({ tiers, onRequestTier, pricingRates, currency 
               </div>
 
               {/* Step 3: Production Scope */}
-              <div className="pt-8 border-t border-neutral-900/60">
+              <div className="pt-8 border-t border-white/20">
                 <div 
                   onClick={() => setIsProductionScopeOpen(!isProductionScopeOpen)}
                   className="flex items-center justify-between cursor-pointer group py-2 select-none"
@@ -1291,7 +1296,7 @@ export default function Services({ tiers, onRequestTier, pricingRates, currency 
                     className={`flex items-start p-5 border text-left transition-all duration-300 cursor-pointer ${
                       activeProduct.productionScope === "single"
                         ? "bg-white border-white text-black"
-                        : "bg-transparent border-neutral-900 hover:border-neutral-700 text-white"
+                        : "bg-transparent border-white/20 hover:border-white/40 text-white"
                     }`}
                   >
                     <div className="mt-0.5 mr-4">
@@ -1314,7 +1319,7 @@ export default function Services({ tiers, onRequestTier, pricingRates, currency 
                     className={`flex items-start p-5 border text-left transition-all duration-300 cursor-pointer ${
                       activeProduct.productionScope === "multi"
                         ? "bg-white border-white text-black"
-                        : "bg-transparent border-neutral-900 hover:border-neutral-700 text-white"
+                        : "bg-transparent border-white/20 hover:border-white/40 text-white"
                     }`}
                   >
                     <div className="mt-0.5 mr-4">
@@ -1333,8 +1338,8 @@ export default function Services({ tiers, onRequestTier, pricingRates, currency 
 
                 {/* Customizable Location Fields based on selected production scope */}
                 {activeProduct.productionScope === "single" ? (
-                  <div className="mt-6 space-y-4 p-5 border border-neutral-900 bg-neutral-950/40 rounded-sm">
-                    <div className="flex items-center justify-between border-b border-neutral-900 pb-2">
+                  <div className="mt-6 space-y-4 p-5 border border-white/20 bg-neutral-900/30 rounded-sm">
+                    <div className="flex items-center justify-between border-b border-white/15 pb-2">
                       <span className="text-[10px] font-mono tracking-widest text-neutral-400 uppercase font-semibold">
                         Signature Location Details
                       </span>
@@ -1350,12 +1355,12 @@ export default function Services({ tiers, onRequestTier, pricingRates, currency 
                         onChange={(e) => updateActiveProductField("singleLocation", { ...activeProduct.singleLocation, description: e.target.value })}
                         rows={3}
                         placeholder="e.g. Minimalist Parisian apartment, soft morning light, raw parquet floors, neutral drape backdrops..."
-                        className="w-full bg-neutral-950 border border-neutral-900 text-white font-sans text-xs py-2.5 px-3 focus:outline-none focus:border-white transition-colors cursor-pointer resize-none leading-relaxed"
+                        className="w-full bg-neutral-950 border border-white/15 text-white font-sans text-xs py-2.5 px-3 focus:outline-none focus:border-white transition-colors cursor-pointer resize-none leading-relaxed"
                       />
                     </div>
 
                     {/* Single Signature Location Reference Upload with Drag & Drop */}
-                    <div className="pt-2 border-t border-neutral-900/40">
+                    <div className="pt-2 border-t border-white/15">
                       <DragDropUpload
                         id={`single-location-${activeProductIndex}`}
                         images={activeProduct.singleLocation.images || []}
@@ -1393,8 +1398,8 @@ export default function Services({ tiers, onRequestTier, pricingRates, currency 
                     </div>
                   </div>
                 ) : (
-                  <div className="mt-6 space-y-5 p-5 border border-neutral-900 bg-neutral-950/40 rounded-sm">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-900 pb-3">
+                  <div className="mt-6 space-y-5 p-5 border border-white/20 bg-neutral-900/30 rounded-sm">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/15 pb-3">
                       <div>
                         <span className="text-[10px] font-mono tracking-widest text-neutral-400 uppercase font-semibold block">
                           Configure Multi-Location Campaign Sets
@@ -1527,7 +1532,7 @@ export default function Services({ tiers, onRequestTier, pricingRates, currency 
               </div>
 
               {/* Step 4: Social & Video Requirements */}
-              <div className="pt-8 border-t border-neutral-900/60">
+              <div className="pt-8 border-t border-white/20">
                 <div 
                   onClick={() => setIsOutputRequirementsOpen(!isOutputRequirementsOpen)}
                   className="flex items-center justify-between cursor-pointer group py-2 select-none"
@@ -1569,7 +1574,7 @@ export default function Services({ tiers, onRequestTier, pricingRates, currency 
                       transition={{ duration: 0.3 }}
                       className="overflow-hidden space-y-6 pt-6"
                     >
-                      <div className="space-y-6 p-5 border border-neutral-900 bg-neutral-950/40 rounded-sm">
+                      <div className="space-y-6 p-5 border border-white/20 bg-neutral-900/30 rounded-sm">
                         
                         {/* Video Quantity Selector */}
                         <div className="space-y-3">
@@ -1582,7 +1587,7 @@ export default function Services({ tiers, onRequestTier, pricingRates, currency 
                             </span>
                           </div>
                           
-                          <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 bg-neutral-950 p-1 border border-neutral-900">
+                          <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 bg-neutral-950 p-1 border border-white/15">
                             {[0, 1, 2, 3, 4, 5].map((count) => {
                               const isActive = (activeProduct.videoCount !== undefined ? activeProduct.videoCount : (activeProduct.videoRequired ? 1 : 0)) === count;
                               return (
@@ -1677,7 +1682,7 @@ export default function Services({ tiers, onRequestTier, pricingRates, currency 
                                         className={`flex flex-col items-start p-4 border text-left transition-all duration-300 cursor-pointer ${
                                           isSelected
                                             ? "bg-white border-white text-black shadow-md"
-                                            : "bg-transparent border-neutral-900 hover:border-neutral-700 text-white"
+                                            : "bg-transparent border-white/20 hover:border-white/40 text-white"
                                         }`}
                                       >
                                         <span className="font-sans-luxury text-[11px] font-semibold tracking-widest uppercase block mb-1">
@@ -1737,7 +1742,7 @@ export default function Services({ tiers, onRequestTier, pricingRates, currency 
                                         className={`flex flex-col items-start p-4 border text-left transition-all duration-300 cursor-pointer ${
                                           isSelected
                                             ? "bg-white border-white text-black shadow-md"
-                                            : "bg-transparent border-neutral-900 hover:border-neutral-700 text-white"
+                                            : "bg-transparent border-white/20 hover:border-white/40 text-white"
                                         }`}
                                       >
                                         <span className="font-sans-luxury text-[11px] font-semibold tracking-widest uppercase block mb-1">
@@ -1758,9 +1763,9 @@ export default function Services({ tiers, onRequestTier, pricingRates, currency 
                               <motion.div
                                 initial={{ opacity: 0, y: -10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="space-y-4 p-4 border border-neutral-900 bg-neutral-950/40 rounded-sm"
+                                className="space-y-4 p-4 border border-white/20 bg-neutral-900/30 rounded-sm"
                               >
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-neutral-900/40 pb-2">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/15 pb-2">
                                   <span className="text-[10px] font-mono tracking-wider text-neutral-400 uppercase font-semibold">
                                     Set Custom Ratio Breakdowns
                                   </span>
@@ -1771,7 +1776,7 @@ export default function Services({ tiers, onRequestTier, pricingRates, currency 
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                   {/* Portrait count adjust */}
-                                  <div className="flex items-center justify-between p-3 border border-neutral-900/60 bg-neutral-950/20 rounded-xs">
+                                  <div className="flex items-center justify-between p-3 border border-white/15 bg-neutral-950/20 rounded-xs">
                                     <div className="space-y-0.5">
                                       <span className="text-[10px] font-mono tracking-wider text-white uppercase font-medium block">
                                         Portrait (9:16)
@@ -1832,7 +1837,7 @@ export default function Services({ tiers, onRequestTier, pricingRates, currency 
                                   </div>
 
                                   {/* Landscape count adjust */}
-                                  <div className="flex items-center justify-between p-3 border border-neutral-900/60 bg-neutral-950/20 rounded-xs">
+                                  <div className="flex items-center justify-between p-3 border border-white/15 bg-neutral-950/20 rounded-xs">
                                     <div className="space-y-0.5">
                                       <span className="text-[10px] font-mono tracking-wider text-white uppercase font-medium block">
                                         Landscape (16:9)
