@@ -10,7 +10,10 @@
     <script>
       (function() {
         var gaId = "%VITE_GA_MEASUREMENT_ID%";
-        if (gaId && gaId.indexOf("%VITE_") !== 0 && gaId !== "undefined") {
+        if (!gaId || gaId.indexOf("%VITE_") === 0 || gaId === "undefined") {
+          gaId = "G-XWF9PMB38T";
+        }
+        if (gaId) {
           var script = document.createElement("script");
           script.async = true;
           script.src = "https://www.googletagmanager.com/gtag/js?id=" + gaId;
